@@ -230,6 +230,13 @@ templ Popover() {
 								Description: "Whether the popover should match the width of the trigger element.",
 								Required:    false,
 							},
+							{
+								Name:        "Exclusive",
+								Type:        "bool",
+								Default:     "false",
+								Description: "When true, opening this popover will close other exclusive popovers.",
+								Required:    false,
+							},
 						},
 					})
 				</div>
