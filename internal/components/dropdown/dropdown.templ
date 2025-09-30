@@ -2,7 +2,6 @@ package dropdown
 
 import (
 	"context"
-	"fmt"
 	"github.com/templui/templui/internal/components/popover"
 	"github.com/templui/templui/internal/utils"
 )
@@ -47,8 +46,6 @@ type ContentProps struct {
 	ID         string
 	Class      string
 	Attributes templ.Attributes
-	Width      string
-	MaxHeight  string
 	Placement  Placement
 }
 
@@ -137,15 +134,13 @@ templ Trigger(props ...TriggerProps) {
 		}
 	}}
 	@popover.Trigger(popover.TriggerProps{
-		ID:  p.ID,
-		For: contentID, TriggerType: popover.TriggerTypeClick,
+		ID:          p.ID,
+		Class:       p.Class,
+		Attributes:  p.Attributes,
+		For:         contentID,
+		TriggerType: popover.TriggerTypeClick,
 	}) {
-		<span
-			class={ utils.TwMerge("", p.Class) }
-			{ p.Attributes... }
-		>
-			{ children... }
-		</span>
+		{ children... }
 	}
 }
 
@@ -159,13 +154,6 @@ templ Content(props ...ContentProps) {
 		{{ contentID = "fallback-content-id" }} // Must match fallback in Trigger
 	}
 	{{
-		var maxHeight string = "300px"
-		if p.MaxHeight != "" {
-			maxHeight = p.MaxHeight
-		}
-		maxHeightClass := fmt.Sprintf("max-h-[%s]", maxHeight)
-	}}
-	{{
 		placement := p.Placement
 		if placement == "" {
 			placement = PlacementBottomStart
@@ -174,17 +162,14 @@ templ Content(props ...ContentProps) {
 	@popover.Content(popover.ContentProps{
 		ID:        contentID,
 		Placement: placement,
-		Offset:    4,
 		Class: utils.TwMerge(
 			"z-50 rounded-md bg-popover p-1 shadow-md focus:outline-none overflow-auto",
 			"border border-border",
-			"min-w-[8rem]",
-			maxHeightClass,
-			p.Width,
+			"min-w-[8rem] max-h-[300px]",
 			p.Class,
 		),
 		Attributes: p.Attributes,
-		Exclusive: true,
+		Exclusive:  true,
 	}) {
 		{ children... }
 	}
