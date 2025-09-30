@@ -1,12 +1,51 @@
 (function () {
   'use strict';
   
+  // Helper to sync selections from hidden input value
+  function syncSelectionsFromValue(trigger) {
+    const hiddenInput = trigger.querySelector('input[type="hidden"]');
+    const contentId = trigger.getAttribute('data-tui-selectbox-content-id');
+    const content = document.getElementById(contentId);
+    
+    if (!hiddenInput || !content) return;
+    
+    const isMultiple = trigger.getAttribute('data-tui-selectbox-multiple') === 'true';
+    const values = hiddenInput.value ? (isMultiple ? hiddenInput.value.split(',') : [hiddenInput.value]) : [];
+    
+    content.querySelectorAll('.select-item').forEach(item => {
+      const itemValue = item.getAttribute('data-tui-selectbox-value') || '';
+      const shouldBeSelected = values.includes(itemValue);
+      const isSelected = item.getAttribute('data-tui-selectbox-selected') === 'true';
+      
+      if (shouldBeSelected !== isSelected) {
+        item.setAttribute('data-tui-selectbox-selected', shouldBeSelected.toString());
+        if (shouldBeSelected) {
+          item.classList.add('bg-accent', 'text-accent-foreground');
+          const check = item.querySelector('.select-check');
+          if (check) check.classList.replace('opacity-0', 'opacity-100');
+        } else {
+          item.classList.remove('bg-accent', 'text-accent-foreground');
+          const check = item.querySelector('.select-check');
+          if (check) check.classList.replace('opacity-100', 'opacity-0');
+        }
+      }
+    });
+  }
+  
   // Helper to update display value
   function updateDisplayValue(trigger) {
     const valueEl = trigger.querySelector('.select-value');
     const hiddenInput = trigger.querySelector('input[type="hidden"]');
     const contentId = trigger.getAttribute('data-tui-selectbox-content-id');
     const content = document.getElementById(contentId);
+    
+    // If no content yet (not opened), try to init from hidden input value
+    if (!content && hiddenInput && hiddenInput.value) {
+      valueEl.textContent = hiddenInput.value; // Simple fallback
+      valueEl.classList.remove('text-muted-foreground');
+      return;
+    }
+    
     if (!valueEl || !content) return;
     
     const isMultiple = trigger.getAttribute('data-tui-selectbox-multiple') === 'true';
@@ -31,7 +70,6 @@
         const pillsContainer = document.createElement('div');
         pillsContainer.className = 'flex flex-wrap gap-1 items-center min-h-[1.5rem]';
         
-        let shouldUseCount = false;
         const pills = [];
         
         Array.from(selectedItems).forEach(selectedItem => {
@@ -156,7 +194,17 @@
     }
   }
   
-  // Click handler
+  // Initialize display values for existing selectboxes
+  function initializeDisplayValues() {
+    document.querySelectorAll('.select-container').forEach(container => {
+      const trigger = container.querySelector('button.select-trigger');
+      if (trigger) {
+        updateDisplayValue(trigger);
+      }
+    });
+  }
+  
+  // Global click handler using Event Delegation
   document.addEventListener('click', (e) => {
     // Handle pill remove clicks
     if (e.target.matches('[data-tui-selectbox-pill-remove]')) {
@@ -192,7 +240,25 @@
     }
   });
   
-  // Keyboard navigation
+  // Global input handler for search and value changes
+  document.addEventListener('input', (e) => {
+    // Handle search input
+    if (e.target.matches('[data-tui-selectbox-search]')) {
+      filterItems(e.target);
+      return;
+    }
+    
+    // Handle hidden input value changes (for reactive frameworks)
+    if (e.target.matches('.select-trigger input[type="hidden"]')) {
+      const trigger = e.target.closest('.select-trigger');
+      if (trigger) {
+        syncSelectionsFromValue(trigger);
+        updateDisplayValue(trigger);
+      }
+    }
+  });
+  
+  // Global keydown handler
   document.addEventListener('keydown', (e) => {
     const activeElement = document.activeElement;
     
@@ -251,14 +317,7 @@
     }
   });
   
-  // Search input handler
-  document.addEventListener('input', (e) => {
-    if (e.target.matches('[data-tui-selectbox-search]')) {
-      filterItems(e.target);
-    }
-  });
-  
-  // Hover effects
+  // Global mouseover handler for hover effects
   document.addEventListener('mouseover', (e) => {
     const item = e.target.closest('.select-item');
     if (!item || item.getAttribute('data-tui-selectbox-disabled') === 'true') return;
@@ -279,7 +338,7 @@
     }
   });
   
-  // Form reset
+  // Global form reset handler
   document.addEventListener('reset', (e) => {
     if (!e.target.matches('form')) return;
     
@@ -309,14 +368,24 @@
     });
   });
   
-  // MutationObserver for initial setup
-  new MutationObserver(() => {
-    document.querySelectorAll('.select-container').forEach(wrapper => {
-      const trigger = wrapper.querySelector('button.select-trigger');
-      if (trigger && !trigger.hasAttribute('data-tui-selectbox-setup')) {
-        trigger.setAttribute('data-tui-selectbox-setup', 'true');
+  // Initialize on DOM ready and handle dynamic content
+  function handleNewContent() {
+    document.querySelectorAll('.select-container').forEach(container => {
+      const trigger = container.querySelector('button.select-trigger');
+      if (trigger && !trigger.hasAttribute('data-initialized')) {
+        trigger.setAttribute('data-initialized', 'true');
         updateDisplayValue(trigger);
       }
     });
-  }).observe(document.body, { childList: true, subtree: true });
+  }
+  
+  // Initialize on DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', handleNewContent);
+  } else {
+    handleNewContent();
+  }
+  
+  // Simple MutationObserver just for initialization
+  new MutationObserver(handleNewContent).observe(document.body, { childList: true, subtree: true });
 })();
