@@ -65,6 +65,7 @@ minify-js-components:
 		internal/components/chart/chart.js \
 		internal/components/code/code.js \
 		internal/components/collapsible/collapsible.js \
+		internal/components/copybutton/copybutton.js \
 		internal/components/datepicker/datepicker.js \
 		internal/components/dialog/dialog.js \
 		internal/components/dropdown/dropdown.js \

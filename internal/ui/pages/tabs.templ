@@ -246,7 +246,8 @@ templ Tabs() {
 				ID:    "javascript-api",
 			}) {
 				@modules.Code(modules.CodeProps{
-					Language: "javascript",
+					Language:       "javascript",
+					ShowCopyButton: true,
 					CodeContent: `// Set active tab programmatically
 window.tui.tabs.setActive("tabs-id", "tab-value");`,
 				})

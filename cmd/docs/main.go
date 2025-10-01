@@ -108,6 +108,7 @@ func main() {
 	mux.Handle("GET /docs/components/checkbox", htmxHandler(pages.Checkbox()))
 	mux.Handle("GET /docs/components/collapsible", htmxHandler(pages.Collapsible()))
 	mux.Handle("GET /docs/components/code", htmxHandler(pages.Code()))
+	mux.Handle("GET /docs/components/copy-button", htmxHandler(pages.CopyButton()))
 	mux.Handle("GET /docs/components/date-picker", htmxHandler(pages.DatePicker()))
 	mux.Handle("GET /docs/components/sheet", htmxHandler(pages.Sheet()))
 	mux.Handle("GET /docs/components/dropdown", htmxHandler(pages.Dropdown()))
@@ -196,10 +197,10 @@ func SetupAssetsRoutes(mux *http.ServeMux) {
 		// Extract the component path from the URL
 		// e.g., /components/js/avatar/avatar.min.js -> avatar/avatar.min.js
 		path := strings.TrimPrefix(r.URL.Path, "/components/js/")
-		
+
 		// Set content type for JS files
 		w.Header().Set("Content-Type", "application/javascript")
-		
+
 		if isDevelopment {
 			w.Header().Set("Cache-Control", "no-store")
 			// In dev, serve from filesystem
@@ -215,7 +216,7 @@ func SetupAssetsRoutes(mux *http.ServeMux) {
 			w.Write(data)
 		}
 	})
-	
+
 	mux.Handle("GET /components/js/", componentJSHandler)
 
 	// Safari Favicon Compatibility

@@ -113,8 +113,12 @@ func main() {
 
 		// Code
 		"out/showcase/code_copy_button.html": showcase.CodeCopyButton(),
-		"out/showcase/code_custom_size.html": showcase.CodeCustomSize(),
 		"out/showcase/code_default.html":     showcase.CodeDefault(),
+
+		// CopyButton
+		"out/showcase/copybutton_default.html":    showcase.CopyButtonDefault(),
+		"out/showcase/copybutton_with_input.html": showcase.CopyButtonWithInput(),
+		"out/showcase/copybutton_with_code.html":  showcase.CopyButtonWithCode(),
 
 		// Date Picker
 		"out/showcase/date_picker_custom_placeholder.html": showcase.DatePickerCustomPlaceholder(),
@@ -126,10 +130,10 @@ func main() {
 		"out/showcase/date_picker_with_label.html":         showcase.DatePickerWithLabel(),
 
 		// Sheet
-		"out/showcase/sheet_default.html": showcase.SheetDefault(),
-		"out/showcase/sheet_sides.html": showcase.SheetSides(),
+		"out/showcase/sheet_default.html":          showcase.SheetDefault(),
+		"out/showcase/sheet_sides.html":            showcase.SheetSides(),
 		"out/showcase/sheet_external_trigger.html": showcase.SheetExternalTrigger(),
-		"out/showcase/sheet_standalone.html": showcase.SheetStandalone(),
+		"out/showcase/sheet_standalone.html":       showcase.SheetStandalone(),
 
 		// Dropdown
 		"out/showcase/dropdown_default.html": showcase.DropdownDefault(),
@@ -158,9 +162,9 @@ func main() {
 		"out/showcase/input_otp_with_label.html":     showcase.InputOTPWithLabel(),
 
 		// Dialog
-		"out/showcase/dialog_default.html": showcase.DialogDefault(),
+		"out/showcase/dialog_default.html":          showcase.DialogDefault(),
 		"out/showcase/dialog_external_trigger.html": showcase.DialogExternalTrigger(),
-		"out/showcase/dialog_standalone.html": showcase.DialogStandalone(),
+		"out/showcase/dialog_standalone.html":       showcase.DialogStandalone(),
 
 		// Pagination
 		"out/showcase/pagination_default.html":     showcase.PaginationDefault(),

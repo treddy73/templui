@@ -1,0 +1,14 @@
+package showcase
+
+import "github.com/templui/templui/internal/components/copybutton"
+
+templ CopyButtonDefault() {
+	<div class="flex items-center gap-4">
+		<div id="copy-text-default" class="text-sm text-muted-foreground">
+			Hello, World!
+		</div>
+		@copybutton.CopyButton(copybutton.Props{
+			TargetID: "copy-text-default",
+		})
+	</div>
+}

@@ -421,7 +421,8 @@ templ Dialog() {
 					ID:    "javascript-api",
 				}) {
 					@modules.Code(modules.CodeProps{
-						Language: "javascript",
+						Language:       "javascript",
+						ShowCopyButton: true,
 						CodeContent: `// Open a dialog programmatically
 window.tui.dialog.open("dialog-id");
 

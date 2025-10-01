@@ -23,10 +23,6 @@ templ Code() {
 						Text: "Copy Button",
 						ID:   "copy-button",
 					},
-					{
-						Text: "Custom Size",
-						ID:   "custom-size",
-					},
 				},
 			},
 			{
@@ -85,12 +81,6 @@ templ Code() {
 					PreviewCodeFile: "code_copy_button.templ",
 					ID:              "copy-button",
 				})
-				@modules.ExampleWrapper(modules.ExampleWrapperProps{
-					SectionName:     "Custom Size",
-					ShowcaseFile:    showcase.CodeCustomSize(),
-					PreviewCodeFile: "code_custom_size.templ",
-					ID:              "custom-size",
-				})
 			}
 			@modules.ContainerWrapper(modules.ContainerWrapperProps{
 				Title: "API Reference",
@@ -125,18 +115,6 @@ templ Code() {
 								Type:        "string",
 								Default:     "\"\"",
 								Description: "Programming language for syntax highlighting",
-							},
-							{
-								Name:        "ShowCopyButton",
-								Type:        "bool",
-								Default:     "false",
-								Description: "Whether to show a copy button for the code",
-							},
-							{
-								Name:        "Size",
-								Type:        "Size",
-								Default:     "\"\"",
-								Description: "Size variant for the code block height",
 							},
 							{
 								Name:        "CodeClass",

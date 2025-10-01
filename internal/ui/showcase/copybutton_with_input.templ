@@ -1,0 +1,20 @@
+package showcase
+
+import (
+	"github.com/templui/templui/internal/components/copybutton"
+	"github.com/templui/templui/internal/components/input"
+)
+
+templ CopyButtonWithInput() {
+	<div class="flex items-center gap-2">
+		@input.Input(input.Props{
+			ID:       "api-key-input",
+			Value:    "abc123_example_key_xyz789",
+			Readonly: true,
+			Class:    "max-w-xs",
+		})
+		@copybutton.CopyButton(copybutton.Props{
+			TargetID: "api-key-input",
+		})
+	</div>
+}

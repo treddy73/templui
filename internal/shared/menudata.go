@@ -86,6 +86,10 @@ var Sections = []Section{
 				Href: "/docs/components/code",
 			},
 			{
+				Text: "Copy Button",
+				Href: "/docs/components/copy-button",
+			},
+			{
 				Text: "Date Picker",
 				Href: "/docs/components/date-picker",
 			},

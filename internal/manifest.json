@@ -87,7 +87,14 @@
       "name": "code",
       "description": "Syntax-highlighted code blocks",
       "files": ["internal/components/code/code.templ"],
-      "dependencies": ["icon"],
+      "dependencies": [],
+      "hasJS": true
+    },
+    {
+      "name": "copybutton",
+      "description": "Copy to clipboard button",
+      "files": ["internal/components/copybutton/copybutton.templ"],
+      "dependencies": ["button", "icon"],
       "hasJS": true
     },
     {
