@@ -368,12 +368,49 @@
     });
   });
   
-  // Initialize on DOM ready and handle dynamic content
-  function handleNewContent() {
+  // Enable reactive binding for hidden inputs (for Datastar, Alpine.js, etc.)
+  function enableReactiveBinding(hiddenInput) {
+    // Prevent double initialization
+    if (hiddenInput.hasAttribute('data-tui-reactive-bound')) return;
+    hiddenInput.setAttribute('data-tui-reactive-bound', 'true');
+    
+    const descriptor = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value');
+    if (!descriptor || !descriptor.set) return;
+    
+    const originalSet = descriptor.set;
+    
+    Object.defineProperty(hiddenInput, 'value', {
+      get: descriptor.get,
+      set: function(newValue) {
+        const oldValue = this.value;
+        originalSet.call(this, newValue);
+        
+        // Only update UI if value actually changed (prevents infinite loop)
+        if (oldValue !== newValue) {
+          const trigger = this.closest('.select-trigger');
+          if (trigger) {
+            syncSelectionsFromValue(trigger);
+            updateDisplayValue(trigger);
+          }
+        }
+      },
+      configurable: true
+    });
+  }
+  
+  // Initialize selectboxes on DOM ready and handle dynamic content
+  function initializeSelectBoxes() {
     document.querySelectorAll('.select-container').forEach(container => {
       const trigger = container.querySelector('button.select-trigger');
       if (trigger && !trigger.hasAttribute('data-initialized')) {
         trigger.setAttribute('data-initialized', 'true');
+        
+        // Enable reactive binding for hidden input
+        const hiddenInput = trigger.querySelector('input[type="hidden"]');
+        if (hiddenInput) {
+          enableReactiveBinding(hiddenInput);
+        }
+        
         updateDisplayValue(trigger);
       }
     });
@@ -381,11 +418,11 @@
   
   // Initialize on DOM ready
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', handleNewContent);
+    document.addEventListener('DOMContentLoaded', initializeSelectBoxes);
   } else {
-    handleNewContent();
+    initializeSelectBoxes();
   }
   
   // Simple MutationObserver just for initialization
-  new MutationObserver(handleNewContent).observe(document.body, { childList: true, subtree: true });
+  new MutationObserver(initializeSelectBoxes).observe(document.body, { childList: true, subtree: true });
 })();
