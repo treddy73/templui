@@ -96,6 +96,13 @@ templ Calendar(props ...Props) {
 	if p.Value != nil {
 		initialSelectedISO = p.Value.Format("2006-01-02")
 	}
+
+	// For SelectBox display
+	currentMonth := initialMonth
+	currentYear := initialYear
+
+	// Generate short month names (English only, JS will update with localized)
+	monthNames := []string{"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"}
 	}}
 	<div class={ p.Class } id={ p.ID + "-wrapper" } data-tui-calendar-wrapper="true">
 		if p.RenderHiddenInput {
@@ -117,24 +124,61 @@ templ Calendar(props ...Props) {
 			data-tui-calendar-start-of-week={ int(initialStartOfWeek) }
 		>
 			<!-- Calendar Header -->
-			<div class="flex items-center justify-between mb-4">
-				<span data-tui-calendar-month-display class="text-sm font-medium"></span>
-				<div class="flex gap-1">
-					<button
-						type="button"
-						data-tui-calendar-prev
-						class="inline-flex items-center justify-center rounded-md text-sm font-medium h-7 w-7 hover:bg-accent hover:text-accent-foreground focus:outline-none disabled:opacity-50"
-					>
-						@icon.ChevronLeft()
-					</button>
-					<button
-						type="button"
-						data-tui-calendar-next
-						class="inline-flex items-center justify-center rounded-md text-sm font-medium h-7 w-7 hover:bg-accent hover:text-accent-foreground focus:outline-none disabled:opacity-50"
-					>
-						@icon.ChevronRight()
-					</button>
+			<div class="flex items-center gap-2 mb-4">
+				<button
+					type="button"
+					data-tui-calendar-prev
+					class="inline-flex items-center justify-center rounded-md text-sm font-medium h-7 w-7 hover:bg-accent hover:text-accent-foreground focus:outline-none disabled:opacity-50 shrink-0"
+				>
+					@icon.ChevronLeft()
+				</button>
+				<div class="flex gap-2 flex-1 min-w-0">
+					<!-- Month Select -->
+					<div class="relative flex-1 has-[:focus]:border-ring border border-input shadow-xs has-[:focus]:ring-ring/50 has-[:focus]:ring-[3px] rounded-md">
+						<select
+							id={ p.ID + "-month-select" }
+							data-tui-calendar-month-select
+							class="absolute inset-0 opacity-0 cursor-pointer w-full"
+							aria-label="Choose the Month"
+						>
+							for i := 0; i < 12; i++ {
+								<option value={ strconv.Itoa(i) } selected?={ i == currentMonth } data-tui-calendar-month-index={ strconv.Itoa(i) }>
+									{ monthNames[i] }
+								</option>
+							}
+						</select>
+						<span class="select-none font-medium rounded-md px-2 flex items-center justify-center gap-1 text-sm h-7 pointer-events-none" aria-hidden="true">
+							<span id={ p.ID + "-month-value" }>{ monthNames[currentMonth] }</span>
+							@icon.ChevronDown(icon.Props{Size: 14, Class: "text-muted-foreground"})
+						</span>
+					</div>
+					<!-- Year Select -->
+					<div class="relative flex-1 has-[:focus]:border-ring border border-input shadow-xs has-[:focus]:ring-ring/50 has-[:focus]:ring-[3px] rounded-md">
+						<select
+							id={ p.ID + "-year-select" }
+							data-tui-calendar-year-select
+							class="absolute inset-0 opacity-0 cursor-pointer w-full"
+							aria-label="Choose the Year"
+						>
+							for year := 2100; year >= 1900; year-- {
+								<option value={ strconv.Itoa(year) } selected?={ year == currentYear }>
+									{ strconv.Itoa(year) }
+								</option>
+							}
+						</select>
+						<span class="select-none font-medium rounded-md px-2 flex items-center justify-center gap-1 text-sm h-7 pointer-events-none" aria-hidden="true">
+							<span id={ p.ID + "-year-value" }>{ strconv.Itoa(currentYear) }</span>
+							@icon.ChevronDown(icon.Props{Size: 14, Class: "text-muted-foreground"})
+						</span>
+					</div>
 				</div>
+				<button
+					type="button"
+					data-tui-calendar-next
+					class="inline-flex items-center justify-center rounded-md text-sm font-medium h-7 w-7 hover:bg-accent hover:text-accent-foreground focus:outline-none disabled:opacity-50 shrink-0"
+				>
+					@icon.ChevronRight()
+				</button>
 			</div>
 			<!-- Weekday Headers -->
 			<div data-tui-calendar-weekdays class="grid grid-cols-7 gap-1 mb-1 place-items-center"></div>

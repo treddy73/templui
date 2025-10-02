@@ -26,24 +26,24 @@
     try {
       return Array.from({ length: 12 }, (_, i) =>
         new Intl.DateTimeFormat(locale, {
-          month: "long",
+          month: "short",
           timeZone: "UTC",
         }).format(new Date(Date.UTC(2000, i, 1))),
       );
     } catch {
       return [
-        "January",
-        "February",
-        "March",
-        "April",
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
         "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
       ];
     }
   }
@@ -78,15 +78,12 @@
   }
 
   function renderCalendar(container) {
-    const monthDisplay = container.querySelector(
-      "[data-tui-calendar-month-display]",
-    );
     const weekdaysContainer = container.querySelector(
       "[data-tui-calendar-weekdays]",
     );
     const daysContainer = container.querySelector("[data-tui-calendar-days]");
 
-    if (!monthDisplay || !weekdaysContainer || !daysContainer) return;
+    if (!weekdaysContainer || !daysContainer) return;
 
     // Get current viewing month/year (or use initial/defaults)
     let currentMonth = parseInt(container.dataset.tuiCalendarCurrentMonth);
@@ -139,9 +136,13 @@
     );
     const selectedDate = selectedDateStr ? parseISODate(selectedDateStr) : null;
 
-    // Update month display
+    // Update SelectBox values
     const monthNames = getMonthNames(locale);
-    monthDisplay.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+    const monthValue = container.querySelector(`#${container.id}-month-value`);
+    const yearValue = container.querySelector(`#${container.id}-year-value`);
+
+    if (monthValue) monthValue.textContent = monthNames[currentMonth];
+    if (yearValue) yearValue.textContent = currentYear;
 
     // Render weekdays if empty
     if (!weekdaysContainer.children.length) {
@@ -195,6 +196,35 @@
     }
   }
 
+  // Handle month/year selection from native selects
+  document.addEventListener("change", (e) => {
+    // Month select
+    if (e.target.matches("[data-tui-calendar-month-select]")) {
+      const container = e.target.closest("[data-tui-calendar-container]");
+      if (!container) return;
+
+      const newMonth = parseInt(e.target.value, 10);
+      if (isNaN(newMonth)) return;
+
+      container.dataset.tuiCalendarCurrentMonth = newMonth;
+      renderCalendar(container);
+      return;
+    }
+
+    // Year select
+    if (e.target.matches("[data-tui-calendar-year-select]")) {
+      const container = e.target.closest("[data-tui-calendar-container]");
+      if (!container) return;
+
+      const newYear = parseInt(e.target.value, 10);
+      if (isNaN(newYear)) return;
+
+      container.dataset.tuiCalendarCurrentYear = newYear;
+      renderCalendar(container);
+      return;
+    }
+  });
+
   // Event delegation for calendar navigation and selection
   document.addEventListener("click", (e) => {
     // Previous month
@@ -219,6 +249,7 @@
       container.dataset.tuiCalendarCurrentMonth = month;
       container.dataset.tuiCalendarCurrentYear = year;
       renderCalendar(container);
+      updateNativeSelects(container);
       return;
     }
 
@@ -244,6 +275,7 @@
       container.dataset.tuiCalendarCurrentMonth = month;
       container.dataset.tuiCalendarCurrentYear = year;
       renderCalendar(container);
+      updateNativeSelects(container);
       return;
     }
 
@@ -285,6 +317,30 @@
       renderCalendar(container);
     }
   });
+
+  // Update native selects when month/year changes via arrows
+  function updateNativeSelects(container) {
+    const month = parseInt(container.dataset.tuiCalendarCurrentMonth, 10);
+    const year = parseInt(container.dataset.tuiCalendarCurrentYear, 10);
+
+    if (isNaN(month) || isNaN(year)) return;
+
+    // Update month select
+    const monthSelect = container.querySelector(
+      "[data-tui-calendar-month-select]",
+    );
+    if (monthSelect) {
+      monthSelect.value = month.toString();
+    }
+
+    // Update year select
+    const yearSelect = container.querySelector(
+      "[data-tui-calendar-year-select]",
+    );
+    if (yearSelect) {
+      yearSelect.value = year.toString();
+    }
+  }
 
   // Form reset handling
   document.addEventListener("reset", (e) => {
@@ -328,7 +384,26 @@
   function initCalendars() {
     document
       .querySelectorAll("[data-tui-calendar-container]")
-      .forEach(renderCalendar);
+      .forEach((container) => {
+        // Localize month names in native select options
+        const locale =
+          container.getAttribute("data-tui-calendar-locale-tag") || "en-US";
+        const monthNames = getMonthNames(locale);
+        const monthSelect = container.querySelector(
+          "[data-tui-calendar-month-select]",
+        );
+
+        if (monthSelect) {
+          const options = monthSelect.querySelectorAll("option");
+          options.forEach((option, index) => {
+            if (monthNames[index]) {
+              option.textContent = monthNames[index];
+            }
+          });
+        }
+
+        renderCalendar(container);
+      });
   }
 
   if (document.readyState === "loading") {
