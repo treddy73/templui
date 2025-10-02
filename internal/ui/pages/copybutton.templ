@@ -45,6 +45,7 @@ templ CopyButton() {
 			Name:        "Copy Button",
 			Description: templ.Raw("Button component that copies content from target elements to clipboard."),
 			Tailwind:    true,
+			VanillaJS:   true,
 			Breadcrumbs: modules.Breadcrumbs{
 				Items: []modules.BreadcrumbItem{
 					{
@@ -71,6 +72,7 @@ templ CopyButton() {
 			}) {
 				@modules.ComponentUsage(modules.ComponentUsageProps{
 					ComponentName: "copybutton",
+					JSFiles:       []string{"copybutton"},
 				})
 			}
 			@modules.ContainerWrapper(modules.ContainerWrapperProps{
