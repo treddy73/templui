@@ -116,12 +116,9 @@
   // Event delegation
   document.addEventListener("click", (e) => {
     // Handle trigger clicks
+    // Disabled buttons don't fire click events, so if we get here, it's enabled
     const trigger = e.target.closest("[data-tui-dialog-trigger]");
-    if (
-      trigger &&
-      !trigger.hasAttribute("disabled") &&
-      !trigger.classList.contains("opacity-50")
-    ) {
+    if (trigger) {
       const dialogId = trigger.getAttribute("data-dialog-instance");
       if (!dialogId) return;
 
