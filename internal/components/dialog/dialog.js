@@ -1,8 +1,6 @@
 (function () {
   "use strict";
 
-  let openDialogs = new Set();
-
   // Open dialog
   function openDialog(dialogId) {
     // Find backdrop and content by instance ID
@@ -14,8 +12,6 @@
     );
 
     if (!backdrop || !content) return;
-
-    openDialogs.add(dialogId);
 
     // First, remove hidden state to make visible (but still in closed position)
     backdrop.removeAttribute("data-tui-dialog-hidden");
@@ -75,14 +71,15 @@
     setTimeout(() => {
       backdrop.setAttribute("data-tui-dialog-hidden", "true");
       content.setAttribute("data-tui-dialog-hidden", "true");
+
+      // Restore body overflow if no dialogs are open (check DOM)
+      const hasOpenDialogs = document.querySelector(
+        '[data-tui-dialog-content][data-tui-dialog-open="true"]',
+      );
+      if (!hasOpenDialogs) {
+        document.body.style.overflow = "";
+      }
     }, 300);
-
-    openDialogs.delete(dialogId);
-
-    // Restore body overflow if no dialogs are open
-    if (openDialogs.size === 0) {
-      document.body.style.overflow = "";
-    }
   }
 
   // Get dialog instance from element
@@ -165,16 +162,20 @@
 
   // ESC key handler
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && openDialogs.size > 0) {
-      // Close the most recently opened dialog
-      const dialogId = Array.from(openDialogs).pop();
+    if (e.key === "Escape") {
+      // Find the most recently opened dialog (last in DOM)
+      const openDialogs = document.querySelectorAll(
+        '[data-tui-dialog-content][data-tui-dialog-open="true"]',
+      );
+      if (openDialogs.length === 0) return;
+
+      const content = openDialogs[openDialogs.length - 1];
+      const dialogId = content.getAttribute("data-dialog-instance");
+      if (!dialogId) return;
 
       // Check if ESC is disabled
       const wrapper = document.querySelector(
         `[data-tui-dialog][data-dialog-instance="${dialogId}"]`,
-      );
-      const content = document.querySelector(
-        `[data-tui-dialog-content][data-dialog-instance="${dialogId}"]`,
       );
 
       const isDisabled =
@@ -190,17 +191,29 @@
   // Initialize dialogs that should be open on load
   document.addEventListener("DOMContentLoaded", () => {
     // Find all dialogs that should be initially open
-    document
-      .querySelectorAll(
-        '[data-tui-dialog-content][data-tui-dialog-open="true"]',
-      )
-      .forEach((content) => {
-        const dialogId = content.getAttribute("data-dialog-instance");
-        if (dialogId) {
-          openDialogs.add(dialogId);
-          document.body.style.overflow = "hidden";
-        }
-      });
+    const openDialogs = document.querySelectorAll(
+      '[data-tui-dialog-content][data-tui-dialog-open="true"]',
+    );
+    if (openDialogs.length > 0) {
+      document.body.style.overflow = "hidden";
+    }
+  });
+
+  // Cleanup when dialog elements are removed from DOM (HTMX, innerHTML, etc.)
+  const observer = new MutationObserver(() => {
+    // Check if any dialogs are still open in DOM
+    const hasOpenDialogs = document.querySelector(
+      '[data-tui-dialog-content][data-tui-dialog-open="true"]',
+    );
+    if (!hasOpenDialogs) {
+      document.body.style.overflow = "";
+    }
+  });
+
+  // Start observing
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true,
   });
 
   // Expose public API
