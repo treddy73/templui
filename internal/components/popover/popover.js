@@ -101,9 +101,12 @@ import "./floating_ui_core.js";
     const content = document.getElementById(popoverId);
     if (!content) return;
 
-    for (const t of document.querySelectorAll('[data-tui-popover-exclusive="true"]')) {
-      const id = t.id;
-      if (id && id !== popoverId) {
+    // Close other exclusive popovers, but preserve parent-child relationships.
+    // Only close popovers that are: (1) currently open, (2) different from the new one, and (3) not parents of the trigger.
+    // This allows nested dropdowns (e.g., submenus) to open without closing their parent dropdown.
+    for (const openPopover of document.querySelectorAll('[data-tui-popover-exclusive="true"][data-tui-popover-open="true"]')) {
+      const id = openPopover.id;
+      if (id && id !== popoverId && !openPopover.contains(trigger)) {
         closePopover(id);
       }
     }
