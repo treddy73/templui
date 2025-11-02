@@ -104,11 +104,11 @@ templ Trigger(props ...TriggerProps) {
 		{{ p = props[0] }}
 	}
 	{{ instanceID := "" }}
-	// Try to get instance ID from context first, fallback to For prop
-	if val := ctx.Value(instanceKey); val != nil {
-		{{ instanceID = val.(string) }}
-	} else if p.For != "" {
+	// Explicit For prop takes priority over inherited context
+	if p.For != "" {
 		{{ instanceID = p.For }}
+	} else if val := ctx.Value(instanceKey); val != nil {
+		{{ instanceID = val.(string) }}
 	}
 	<span
 		if p.ID != "" {
