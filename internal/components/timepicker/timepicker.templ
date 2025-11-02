@@ -25,7 +25,6 @@ type Props struct {
 	AMLabel     string
 	PMLabel     string
 	Placeholder string
-	Required    bool
 	Disabled    bool
 	HasError    bool
 }
@@ -77,8 +76,7 @@ templ TimePicker(props ...Props) {
 			if p.Form != "" {
 				form={ p.Form }
 			}
-			required?={ p.Required }
-			id={ p.ID + "-hidden" }
+				id={ p.ID + "-hidden" }
 			data-tui-timepicker-hidden-input="true"
 		/>
 		@popover.Trigger(popover.TriggerProps{For: contentID}) {

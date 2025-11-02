@@ -10,7 +10,6 @@ type Props struct {
 	Value      string
 	Form       string
 	Disabled   bool
-	Required   bool
 	Checked    bool
 }
 
@@ -35,8 +34,7 @@ templ Radio(props ...Props) {
 		}
 		checked?={ p.Checked }
 		disabled?={ p.Disabled }
-		required?={ p.Required }
-		class={
+			class={
 			utils.TwMerge(
 				"relative h-4 w-4",
 				"before:absolute before:left-1/2 before:top-1/2",

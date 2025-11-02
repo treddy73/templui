@@ -16,7 +16,6 @@ type Props struct {
 	Rows        int
 	AutoResize  bool
 	Disabled    bool
-	Required    bool
 	Readonly    bool
 	HasError    bool
 }
@@ -45,8 +44,7 @@ templ Textarea(props ...Props) {
 			rows={ strconv.Itoa(p.Rows) }
 		}
 		disabled?={ p.Disabled }
-		required?={ p.Required }
-		readonly?={ p.Readonly }
+			readonly?={ p.Readonly }
 		if p.HasError {
 			aria-invalid="true"
 		}
