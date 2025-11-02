@@ -76,7 +76,7 @@ templ TimePicker(props ...Props) {
 			if p.Form != "" {
 				form={ p.Form }
 			}
-				id={ p.ID + "-hidden" }
+			id={ p.ID + "-hidden" }
 			data-tui-timepicker-hidden-input="true"
 		/>
 		@popover.Trigger(popover.TriggerProps{For: contentID}) {
