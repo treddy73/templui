@@ -64,6 +64,8 @@ templ Trigger(props ...TriggerProps) {
 	}
 	@popover.Trigger(popover.TriggerProps{
 		ID:          p.ID,
+		Class:       p.Class,
+		Attributes:  p.Attributes,
 		TriggerType: popover.TriggerTypeHover,
 		For:         p.For,
 	}) {
