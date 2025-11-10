@@ -1,9 +1,9 @@
 # Dev Tools
 templ:
-	templ generate --watch --proxy="http://localhost:8090" --open-browser=false
+	go tool templ generate --watch --proxy="http://localhost:8090" --open-browser=false
 
 server:
-	air \
+	go tool air \
 	--build.cmd "go build -o tmp/bin/main ./cmd/docs" \
 	--build.bin "tmp/bin/main" \
 	--build.delay "100" \
@@ -40,7 +40,7 @@ install-compinstall:
 # Validate generated HTML files against Eslint plugins
 # Step 1: Compile templ files into Go
 templ-generate:
-	templ generate
+	go tool templ generate
 
 # Step 2: Render showcase components into out/showcase/
 render-showcases:
