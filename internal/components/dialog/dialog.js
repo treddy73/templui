@@ -32,13 +32,18 @@
           trigger.setAttribute("data-tui-dialog-trigger-open", "true");
         });
 
-      // Focus first focusable element
-      setTimeout(() => {
-        const focusable = content.querySelector(
-          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
-        );
-        focusable?.focus();
-      }, 50);
+      // Focus first focusable element (unless disabled)
+      const disableAutoFocus = content.hasAttribute(
+        "data-tui-dialog-disable-autofocus",
+      );
+      if (!disableAutoFocus) {
+        setTimeout(() => {
+          const focusable = content.querySelector(
+            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+          );
+          focusable?.focus();
+        }, 50);
+      }
     });
   }
 
