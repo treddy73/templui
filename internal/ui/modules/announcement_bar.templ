@@ -23,16 +23,13 @@ templ Stars900AnnouncementBar() {
 }
 
 templ AnnouncementBar() {
-	<div class="relative z-50 flex items-center justify-center bg-muted/40 border-b px-4 py-1.5 text-center">
-		<div class="group inline-flex items-center gap-2 text-sm text-muted-foreground">
-			<span>🚀</span>
-			<span class="opacity-90">Build faster</span>
-			@icon.ArrowRight(icon.Props{Class: "h-3.5 w-3.5"})
-			<span>
-				<a href="https://goilerplate.com" target="_blank" class="font-semibold text-foreground hover:underline">goilerplate</a>
-				<span class="mx-2 text-muted-foreground">•</span>
-				<a href="https://pro.templui.io" target="_blank" class="font-semibold text-foreground hover:underline">templUI Pro</a>
-			</span>
+	<div class="relative z-50 flex items-center justify-center bg-muted border-b px-4 py-1 text-center">
+		<div class="inline-flex items-center gap-2 text-sm flex-wrap justify-center">
+			@icon.Rocket(icon.Props{Size: 16})
+			<span class="text-muted-foreground">Ship faster with</span>
+			<a href="https://goilerplate.com" target="_blank" rel="noopener noreferrer" class="font-semibold text-foreground hover:text-foreground transition-colors">goilerplate</a>
+			<span class="text-muted-foreground">•</span>
+			<a href="https://pro.templui.io" target="_blank" rel="noopener noreferrer" class="font-semibold text-foreground hover:text-foreground transition-colors">templUI Pro</a>
 		</div>
 	</div>
 }
