@@ -6,29 +6,13 @@ import (
 	"github.com/templui/templui/internal/ui/modules"
 )
 
-var installGo = `go version`
-
 var installTempl = `go install github.com/a-h/templ/cmd/templ@latest`
 
-var tailwindHomebrew = `brew install tailwindcss`
-
-var tailwindMacOSArm64 = `curl -sLO https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-macos-arm64
-chmod +x tailwindcss-macos-arm64
-sudo mv tailwindcss-macos-arm64 /usr/local/bin/tailwindcss`
-
-var tailwindMacOSX64 = `curl -sLO https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-macos-x64
-chmod +x tailwindcss-macos-x64
-sudo mv tailwindcss-macos-x64 /usr/local/bin/tailwindcss`
-
-var tailwindLinuxX64 = `curl -sLO https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-linux-x64
-chmod +x tailwindcss-linux-x64
-sudo mv tailwindcss-linux-x64 /usr/local/bin/tailwindcss`
-
-var tailwindWindowsX64 = `# On Windows (x64i
-# Download from: https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-windows-x64.exe
-# Add to your PATH as 'tailwindcss'`
-
 var taskFile = `version: '3'
+
+vars:
+  TAILWIND_CMD:
+    sh: command -v tailwindcss >/dev/null 2>&1 && echo "tailwindcss" || echo "npx tailwindcss@latest"
 
 tasks:
   templ:
@@ -39,7 +23,7 @@ tasks:
   tailwind:
     desc: Watch Tailwind CSS changes
     cmds:
-      - tailwindcss -i ./assets/css/input.css -o ./assets/css/output.css --watch
+      - "{{.TAILWIND_CMD}} -i ./assets/css/input.css -o ./assets/css/output.css --watch"
 
   dev:
     desc: Start development server with hot reload
@@ -293,33 +277,20 @@ templ HowToUse() {
 					<div class="space-y-6">
 						<div>
 							<div class="flex items-center gap-2 mb-2">
-								<h3 class="text-xl font-semibold">1. Go (1.25 or later)</h3>
+								<h3 class="text-xl font-semibold">1. Go (1.25+)</h3>
 								<a
-									href="https://golang.org"
+									href="https://golang.org/dl"
 									target="_blank"
 									class="inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground transition-colors"
-									aria-label="Visit Go website"
+									aria-label="Visit Go downloads"
 								>
 									@icon.ExternalLink(icon.Props{Size: 16})
 								</a>
 							</div>
-							<p class="text-muted-foreground mb-2">Check your Go version:</p>
-							@modules.Code(modules.CodeProps{
-								Language:       "shell",
-								ShowCopyButton: true,
-								CodeContent:    installGo,
-							})
-							<p class="text-sm mt-2 text-muted-foreground">
-								For installation instructions, visit 
-								<a href="https://golang.org/dl" class="inline-flex items-center gap-1 text-primary/90 hover:text-primary underline underline-offset-4" target="_blank">
-									golang.org/dl
-									@icon.ArrowUpRight(icon.Props{Size: 12})
-								</a>
-							</p>
 						</div>
 						<div>
 							<div class="flex items-center gap-2 mb-2">
-								<h3 class="text-xl font-semibold">2. templ (v0.3.960 or later)</h3>
+								<h3 class="text-xl font-semibold">2. templ (v0.3.960+)</h3>
 								<a
 									href="https://templ.guide"
 									target="_blank"
@@ -329,7 +300,6 @@ templ HowToUse() {
 									@icon.ExternalLink(icon.Props{Size: 16})
 								</a>
 							</div>
-							<p class="mb-2 text-muted-foreground">Install the templ CLI:</p>
 							@modules.Code(modules.CodeProps{
 								Language:       "shell",
 								ShowCopyButton: true,
@@ -338,49 +308,19 @@ templ HowToUse() {
 						</div>
 						<div>
 							<div class="flex items-center gap-2 mb-2">
-								<h3 class="text-xl font-semibold">3. Tailwind CSS Standalone CLI (v4.0.5 or later)</h3>
+								<h3 class="text-xl font-semibold">3. Tailwind CSS CLI (v4.1+)</h3>
 								<a
-									href="https://tailwindcss.com"
+									href="https://tailwindcss.com/docs/installation"
 									target="_blank"
 									class="inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground transition-colors"
-									aria-label="Visit Tailwind CSS website"
+									aria-label="Visit Tailwind CSS installation docs"
 								>
 									@icon.ExternalLink(icon.Props{Size: 16})
 								</a>
 							</div>
-							<p class="mb-2 text-muted-foreground">Install the standalone CLI based on your operating system:</p>
-							<div class="space-y-4">
-								<p class="mb-2 text-muted-foreground">Homebrew (macOS):</p>
-								@modules.Code(modules.CodeProps{
-									Language:       "shell",
-									ShowCopyButton: true,
-									CodeContent:    tailwindHomebrew,
-								})
-								<p class="mb-2 text-muted-foreground">macOS (Apple Silicon):</p>
-								@modules.Code(modules.CodeProps{
-									Language:       "shell",
-									ShowCopyButton: true,
-									CodeContent:    tailwindMacOSArm64,
-								})
-								<p class="mb-2 text-muted-foreground">macOS (Intel):</p>
-								@modules.Code(modules.CodeProps{
-									Language:       "shell",
-									ShowCopyButton: true,
-									CodeContent:    tailwindMacOSX64,
-								})
-								<p class="mb-2 text-muted-foreground">Linux (x64):</p>
-								@modules.Code(modules.CodeProps{
-									Language:       "shell",
-									ShowCopyButton: true,
-									CodeContent:    tailwindLinuxX64,
-								})
-								<p class="mb-2 text-muted-foreground">Windows (x64):</p>
-								@modules.Code(modules.CodeProps{
-									Language:       "shell",
-									ShowCopyButton: true,
-									CodeContent:    tailwindWindowsX64,
-								})
-							</div>
+							<p class="text-sm text-muted-foreground">
+								Standalone CLI recommended { "for" } best performance. Alternatively, use via <code class="bg-muted px-1 rounded">npx tailwindcss@latest</code>.
+							</p>
 						</div>
 					</div>
 				</section>
@@ -411,68 +351,42 @@ templ HowToUse() {
 			}) {
 				<section class="mb-12">
 					<div class="bg-muted p-4 rounded-lg mb-6">
-						<p class="mb-2 text-muted-foreground">
-							Here is our recommended development setup for Go and templ projects, adapted from official documentation and community best practices:
-						</p>
-						<ul class="list-disc pl-6 space-y-1 text-muted-foreground">
-							<li>Hot reloading for Go, Templ, and Tailwind</li>
-							<li>Convenient development commands via Task (cross-platform)</li>
-							<li>Automated file watching and rebuilding</li>
-						</ul>
-						<p class="mt-2 text-sm text-muted-foreground">
-							This Taskfile setup is inspired by the <a href="https://templ.guide" class="text-primary underline" target="_blank">templ documentation</a>'s development workflow, but uses Task instead of Make for better cross-platform compatibility (Windows/macOS/Linux).
+						<p class="text-muted-foreground">
+							Recommended development setup with hot reloading { "for" } Go, templ, and Tailwind using <a href="https://taskfile.dev" class="text-primary underline" target="_blank">Task</a> (cross-platform alternative to Make).
 						</p>
 					</div>
 					<div class="space-y-6">
 						<div id="task-runner">
-							<h3 class="text-xl font-semibold mb-2">1. Task (Cross-Platform Task Runner)</h3>
-							<p class="mb-2 text-muted-foreground">Install Task for managing development commands:</p>
+							<h3 class="text-xl font-semibold mb-2">1. Install Task</h3>
 							@modules.Code(modules.CodeProps{
 								Language:       "shell",
 								ShowCopyButton: true,
 								CodeContent:    "go install github.com/go-task/task/v3/cmd/task@latest",
 							})
-							<p class="text-sm mt-2 text-muted-foreground">
-								Task is a modern alternative to Make that works seamlessly on all platforms. Learn more at <a href="https://taskfile.dev" class="text-primary underline" target="_blank">taskfile.dev</a>
-							</p>
 						</div>
 						<div id="development-taskfile">
-							<h3 class="text-xl font-semibold mb-2">2. Development Taskfile</h3>
-							<p class="mb-2 text-muted-foreground">Create a Taskfile.yml in your project root:</p>
+							<h3 class="text-xl font-semibold mb-2">2. Create Taskfile.yml</h3>
 							@modules.Code(modules.CodeProps{
 								Language:       "yaml",
 								ShowCopyButton: true,
 								CodeContent:    taskFile,
 							})
 							<div class="bg-muted p-4 rounded-lg mt-4">
-								<p class="font-medium mb-2 text-muted-foreground">Note about ports:</p>
-								<ul class="list-disc pl-6 space-y-1 text-sm text-muted-foreground">
-									<li>In this example configuration, the Go application runs on port 8090</li>
-									<li>templs development server will be available at http://localhost:7331</li>
-									<li>Adjust the --proxy flag in the templ command if your app uses a different port</li>
-								</ul>
+								<p class="text-sm text-muted-foreground">
+									<strong>💡 Smart Tailwind Detection:</strong> Automatically uses standalone CLI if installed, falls back to <code class="bg-background px-1 rounded">npx</code>. <strong>Ports:</strong> Go app on 8090, templ dev server on 7331.
+								</p>
 							</div>
 						</div>
 						<div id="start-dev-server">
-							<h3 class="text-xl font-semibold mb-2">3. Start Development Server</h3>
-							<p class="mb-2 text-muted-foreground">Start all development tools with a single command:</p>
+							<h3 class="text-xl font-semibold mb-2">3. Start Development</h3>
 							@modules.Code(modules.CodeProps{
 								Language:       "shell",
 								ShowCopyButton: true,
 								CodeContent:    devCommand,
 							})
-							<p class="text-sm mt-2 text-muted-foreground">This will:</p>
-							<ul class="list-disc pl-6 text-sm space-y-1 text-muted-foreground">
-								<li>Watch and compile templ files</li>
-								<li>Start the Go server with integrated hot reload</li>
-								<li>Watch and compile Tailwind CSS changes</li>
-							</ul>
-							<p class="text-sm mt-2 text-muted-foreground">Or run services individually:</p>
-							<ul class="list-disc pl-6 text-sm space-y-1 text-muted-foreground">
-								<li>{ `task templ` } - Watch templ files and run server</li>
-								<li>{ `task tailwind` } - Watch Tailwind CSS only</li>
-								<li>{ `task --list` } - Show all available tasks</li>
-							</ul>
+							<p class="text-sm mt-2 text-muted-foreground">
+								Watches templ, Go, and Tailwind with hot reload. Run <code class="bg-muted px-1 rounded">task --list</code> to see individual tasks.
+							</p>
 						</div>
 					</div>
 				</section>
@@ -486,136 +400,74 @@ templ HowToUse() {
 					<div class="space-y-8">
 						<div id="install-cli">
 							<h3 class="text-xl font-semibold mb-2">1. Install the templUI CLI</h3>
-							<p class="mb-2 text-muted-foreground">Install the latest version using `go install`:</p>
 							@modules.Code(modules.CodeProps{
 								Language:       "shell",
 								ShowCopyButton: true,
 								CodeContent:    "go install github.com/templui/templui/cmd/templui@latest",
 							})
-							<br/>
-							<p class="mb-2 text-muted-foreground">Verify the installation:</p>
-							@modules.Code(modules.CodeProps{
-								Language:       "shell",
-								ShowCopyButton: true,
-								CodeContent:    "templui -v",
-							})
+							<p class="text-sm mt-2 text-muted-foreground">Verify: <code class="bg-muted px-1 rounded">templui -v</code></p>
 						</div>
 						<div id="initialize-project">
-							<h3 class="text-xl font-semibold mb-2">2. Initialize templUI in Your Project</h3>
-							<p class="mb-2 text-muted-foreground">Navigate to your projects root directory and run:</p>
+							<h3 class="text-xl font-semibold mb-2">2. Initialize Project</h3>
 							@modules.Code(modules.CodeProps{
 								Language:       "shell",
 								ShowCopyButton: true,
 								CodeContent:    "templui init",
 							})
-							<p class="text-sm mt-2 mb-4 text-muted-foreground">You will be prompted to set directories for components and utils, your Go module name, a directory for JavaScript files, and optionally a public path for serving JS files.</p>
-							<p class="mb-2 text-muted-foreground">You can specify a specific version (tag, branch, commit):</p>
-							@modules.Code(modules.CodeProps{
-								Language:       "shell",
-								ShowCopyButton: true,
-								CodeContent:    "templui init@v0.1.0 # Example: Initialize using version v0.1.0",
-							})
+							<p class="text-sm mt-2 text-muted-foreground">
+								Sets up configuration { "for" } components, utils, module name, and JS paths. Use <code class="bg-muted px-1 rounded">templui init@<!---->v0.1.0</code> { "for" } specific version.
+							</p>
 						</div>
 						<div id="add-components">
 							<h3 class="text-xl font-semibold mb-2">3. Add Components</h3>
-							<p class="mb-2 text-muted-foreground">Use the `add` command to install specific components and their dependencies into your configured directories.</p>
 							@modules.Code(modules.CodeProps{
 								Language:       "shell",
 								ShowCopyButton: true,
-								CodeContent:    "templui add button card",
+								CodeContent:    "templui add button card    # Specific components\ntemplui add \"*\"            # All components\ntemplui add@main button    # From specific version",
 							})
-							<br/>
-							<p class="mb-2 text-muted-foreground">To install all available components:</p>
-							@modules.Code(modules.CodeProps{
-								Language:       "shell",
-								ShowCopyButton: true,
-								CodeContent:    "templui add \"*\"",
-							})
-							<br/>
-							<p class="mb-2 text-muted-foreground">To install components from a specific version (tag, branch, commit):</p>
-							@modules.Code(modules.CodeProps{
-								Language:       "shell",
-								ShowCopyButton: true,
-								CodeContent:    "templui add@main button # Install button from the main branch",
-							})
-							<p class="text-sm mt-2 mb-4 text-muted-foreground">The CLI automatically handles dependencies defined in the manifest and adjusts import paths within the copied `.templ` files to match your projects module path.</p>
-							<div class="bg-muted p-4 rounded-lg mt-4 mb-4">
-								<h4 class="font-semibold mb-2">📝 JavaScript Components</h4>
-								<p class="text-muted-foreground mb-2">For components that require JavaScript (like dialogs, dropdowns, etc.), the CLI automatically:</p>
-								<ul class="list-disc pl-6 space-y-1 text-muted-foreground mb-2">
-									<li>Downloads the components JavaScript file</li>
-									<li>Adds a <code class="bg-background px-1 rounded">Script()</code> template to the component</li>
-								</ul>
-								<p class="text-muted-foreground mb-2">You must include the Script() template in your layout:</p>
-								@modules.Code(modules.CodeProps{
-									Language:       "templ",
-									ShowCopyButton: true,
-									CodeContent:    "@dialog.Script()  // Include in your base layout",
-								})
-								<p class="text-sm mt-2 text-muted-foreground">Each component manages its own JavaScript - no global bundle needed!</p>
-								<p class="text-sm mt-2 text-muted-foreground">Script files are automatically cache-busted on app restart using a timestamp query parameter.</p>
+							<div class="bg-muted p-4 rounded-lg mt-4">
+								<p class="text-sm text-muted-foreground">
+									<strong>📝 JavaScript Components:</strong> Components with JS (dialogs, dropdowns) include a Script() template - add it to your layout.
+								</p>
 							</div>
 						</div>
 						<div id="update-components">
 							<h3 class="text-xl font-semibold mb-2">4. Update Components</h3>
-							<p class="mb-2 text-muted-foreground">To update existing components to a newer version, use the same `add` command. The CLI will detect existing components and prompt for confirmation:</p>
 							@modules.Code(modules.CodeProps{
 								Language:       "shell",
 								ShowCopyButton: true,
-								CodeContent:    "templui add carousel  # Updates carousel if it exists",
+								CodeContent:    "templui add carousel       # Prompts for confirmation\ntemplui -f add carousel    # Force update without prompts",
 							})
-							<p class="text-sm mt-2 mb-4 text-muted-foreground">When updating, you'll see a prompt like:</p>
-							@modules.Code(modules.CodeProps{
-								Language:       "text",
-								ShowCopyButton: true,
-								CodeContent:    "Confirm: File 'components/carousel/carousel.templ' (Existing Version: v0.93.0) differs from requested ref 'v0.94.0'. Overwrite? [y/N]:",
-							})
-							<br/>
-							<p class="mb-2 text-muted-foreground">To force updates without confirmation prompts:</p>
-							@modules.Code(modules.CodeProps{
-								Language:       "shell",
-								ShowCopyButton: true,
-								CodeContent:    "templui -f add carousel  # Force update without prompts\ntemplui -f add \"*\"       # Force update all components",
-							})
-							<div class="bg-muted p-4 rounded-lg mt-4">
-								<p class="font-medium mb-2 text-muted-foreground">💡 Update Tips:</p>
-								<ul class="list-disc pl-6 space-y-1 text-sm text-muted-foreground">
-									<li>The CLI compares version comments in files to detect updates</li>
-									<li>Use specific versions with `@` to control updates: `templui add@v0.95.0 carousel`</li>
-									<li>Files at the same version are skipped automatically</li>
-									<li>Your custom modifications will be overwritten - backup important changes first</li>
-								</ul>
-							</div>
+							<p class="text-sm mt-2 text-muted-foreground">
+								⚠️ Updates overwrite custom modifications. Backup important changes first.
+							</p>
 						</div>
 						<div id="list-components">
-							<h3 class="text-xl font-semibold mb-2">5. List Available Components</h3>
-							<p class="mb-2 text-muted-foreground">To see a list of all components and utils available in the manifest (for the default or a specific version):</p>
+							<h3 class="text-xl font-semibold mb-2">5. List Components</h3>
 							@modules.Code(modules.CodeProps{
 								Language:       "shell",
 								ShowCopyButton: true,
-								CodeContent:    "templui list\ntemplui list@v0.1.0", // Keep newline for display
+								CodeContent:    "templui list\ntemplui list@v0.1.0",
 							})
 						</div>
 						<div id="upgrade-cli">
 							<h3 class="text-xl font-semibold mb-2">6. Upgrade CLI</h3>
-							<p class="mb-2 text-muted-foreground">Keep your templUI CLI up to date with the latest features and improvements:</p>
 							@modules.Code(modules.CodeProps{
 								Language:       "shell",
 								ShowCopyButton: true,
-								CodeContent:    "templui upgrade                  # Upgrade to latest version\ntemplui upgrade@v0.84.0          # Upgrade to specific version",
+								CodeContent:    "templui upgrade             # Latest version\ntemplui upgrade@v0.84.0     # Specific version",
 							})
-							<p class="text-sm mt-2 text-muted-foreground">The upgrade command uses `go install` to update the CLI tool to the specified version.</p>
 						</div>
 						<div id="copy-paste">
 							<h3 class="text-xl font-semibold mb-2">7. Copy & Paste</h3>
-							<p class="mb-4 text-muted-foreground">
-								Alternatively, instead of using our CLI, you can copy any component directly from the docs or the GitHub repository and paste it into your project. Just make sure to manually include any required dependencies and adjust import paths accordingly.
+							<p class="text-sm text-muted-foreground">
+								Copy components directly from docs or GitHub. Manually handle dependencies and import paths.
 							</p>
 						</div>
 						<div id="quickstart-template">
 							<h3 class="text-xl font-semibold mb-2">8. Quickstart Template</h3>
-							<p class="mb-4 text-muted-foreground">
-								For a completely new project with everything pre-configured, use our <a href="https://github.com/templui/templui-quickstart" class="text-primary underline" target="_blank">templUI Quickstart</a> template.
+							<p class="text-sm text-muted-foreground">
+								New project? Use <a href="https://github.com/templui/templui-quickstart" class="text-primary underline" target="_blank">templUI Quickstart</a> { "for" } pre-configured setup.
 							</p>
 						</div>
 					</div>
@@ -648,7 +500,7 @@ templ HowToUse() {
 								</div>
 								<div class="border border-border rounded-lg p-4">
 									<h4 class="font-semibold mb-2"><code class="bg-muted px-1 rounded">moduleName</code></h4>
-									<p class="text-sm text-muted-foreground">Your Go module name (used for import path adjustment)</p>
+									<p class="text-sm text-muted-foreground">Your Go module name (used { "for" } import path adjustment)</p>
 								</div>
 								<div class="border border-border rounded-lg p-4">
 									<h4 class="font-semibold mb-2"><code class="bg-muted px-1 rounded">jsDir</code></h4>
