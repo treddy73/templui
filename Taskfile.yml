@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 
 vars:
   TAILWIND_CMD:
@@ -9,7 +9,7 @@ tasks:
   templ:
     desc: Run templ with integrated server and hot reload
     cmds:
-      - go tool templ generate --watch --proxy="http://localhost:8090" --cmd="go run ./cmd/docs/main.go" --open-browser=true
+      - go tool templ generate --watch --proxy="http://localhost:8090" --cmd="go run ./cmd/docs/main.go" --open-browser=false
 
   shiki-highlighter:
     desc: Start shiki syntax highlighter service

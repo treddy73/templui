@@ -14,6 +14,7 @@ import (
 	"github.com/templui/templui/internal/components/toast"
 	"github.com/templui/templui/internal/config"
 	"github.com/templui/templui/internal/middleware"
+	"github.com/templui/templui/internal/service"
 	"github.com/templui/templui/internal/ui/pages"
 	"github.com/templui/templui/static"
 )
@@ -57,6 +58,9 @@ func main() {
 	config.LoadConfig()
 	SetupAssetsRoutes(mux)
 
+	// Initialize markdown docs service
+	docsService := service.NewDocsService()
+
 	wrappedMux := middleware.WithURLPathValue(
 		middleware.CacheControlMiddleware(
 			middleware.GitHubStarsMiddleware(
@@ -90,9 +94,27 @@ func main() {
 	mux.Handle("GET /docs", http.RedirectHandler("/docs/introduction", http.StatusSeeOther))
 	mux.Handle("GET /docs/getting-started", http.RedirectHandler("/docs/introduction", http.StatusSeeOther))
 	mux.Handle("GET /docs/components", htmxHandler(pages.ComponentsOverview()))
-	mux.Handle("GET /docs/introduction", htmxHandler(pages.Introduction()))
-	mux.Handle("GET /docs/how-to-use", htmxHandler(pages.HowToUse()))
 	mux.Handle("GET /docs/themes", htmxHandler(pages.Themes()))
+
+	// Markdown-based documentation pages
+	markdownDocsHandler := func(slug string) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			doc, err := docsService.GetPage(slug)
+			if err != nil {
+				http.Error(w, "Documentation page not found: "+err.Error(), http.StatusNotFound)
+				return
+			}
+
+			if middleware.IsHtmxRequest(r) {
+				templ.Handler(pages.MarkdownDoc(doc), templ.WithFragments("content", "toc")).ServeHTTP(w, r)
+			} else {
+				templ.Handler(pages.MarkdownDoc(doc)).ServeHTTP(w, r)
+			}
+		})
+	}
+
+	mux.Handle("GET /docs/introduction", markdownDocsHandler("introduction"))
+	mux.Handle("GET /docs/how-to-use", markdownDocsHandler("how-to-use"))
 	// Components
 	mux.Handle("GET /docs/components/accordion", htmxHandler(pages.Accordion()))
 	mux.Handle("GET /docs/components/alert", htmxHandler(pages.Alert()))

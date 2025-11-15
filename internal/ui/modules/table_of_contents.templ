@@ -40,7 +40,7 @@ templ renderTOCItems(items []TableOfContentsItem, level int) {
 			href={ templ.SafeURL("#" + item.ID) }
 			class={ templ.Classes(
 				"block py-1 text-[0.8rem] text-muted-foreground hover:text-foreground",
-				"no-underline transition-colors",
+				"no-underline transition-colors break-words",
 				templ.KV("pl-4", level == 1),
 				templ.KV("pl-6", level >= 2),
 			) }
