@@ -2,6 +2,37 @@
 
 First off, thank you for considering contributing to templUI! We're excited to have you join our community.
 
+## Development Setup
+
+### Prerequisites
+
+- Go 1.25 or higher
+- Node.js (for Tailwind CSS and esbuild)
+- [Task](https://taskfile.dev) - Cross-platform task runner
+
+Install Task:
+```bash
+go install github.com/go-task/task/v3/cmd/task@latest
+```
+
+### Development Workflow
+
+Start the development server:
+```bash
+task dev
+```
+
+This runs all watchers in parallel:
+- `templ` - Template generation with integrated server and hot reload
+- `tailwindcss` - CSS compilation
+- `shiki-highlighter` - Syntax highlighting service
+- `esbuild` - JavaScript minification for component scripts
+
+See available tasks:
+```bash
+task --list
+```
+
 ## Our Vision and Your Contributions
 
 templUI is an open-source project that aims to provide value to the Go community. We want to be transparent about our long-term vision:

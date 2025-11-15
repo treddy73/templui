@@ -4,7 +4,7 @@ go 1.25
 
 require (
 	github.com/Oudwins/tailwind-merge-go v0.2.0
-	github.com/a-h/templ v0.3.924
+	github.com/a-h/templ v0.3.960
 	github.com/joho/godotenv v1.5.1
 )
 
@@ -42,5 +42,3 @@ require (
 )
 
 tool github.com/a-h/templ/cmd/templ
-
-tool github.com/air-verse/air
