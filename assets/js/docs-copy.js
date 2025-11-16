@@ -57,8 +57,6 @@
           }, 2000);
         } catch (err) {
           console.error('Failed to copy:', err);
-          // Fallback copy method for older browsers
-          fallbackCopy(code.trim());
         }
       });
 
@@ -66,42 +64,10 @@
     });
   }
 
-  // Fallback copy method for older browsers (matching CopyButton.js)
-  function fallbackCopy(text) {
-    const textArea = document.createElement('textarea');
-    textArea.value = text;
-    textArea.style.position = 'fixed';
-    textArea.style.top = '-9999px';
-    textArea.style.left = '-9999px';
-    document.body.appendChild(textArea);
-    textArea.focus();
-    textArea.select();
-
-    try {
-      document.execCommand('copy');
-    } catch (err) {
-      console.error('Fallback copy failed:', err);
-    }
-
-    document.body.removeChild(textArea);
-  }
-
   // Initialize on page load
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initCopyButtons);
   } else {
     initCopyButtons();
-  }
-
-  // Re-initialize on dynamic content changes (for HTMX updates)
-  if (typeof MutationObserver !== 'undefined') {
-    const observer = new MutationObserver(() => {
-      initCopyButtons();
-    });
-
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true
-    });
   }
 })();

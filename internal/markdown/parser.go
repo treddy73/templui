@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
 
 	"github.com/templui/templui/internal/ui/modules"
 	"github.com/yuin/goldmark"
@@ -140,52 +139,17 @@ func (r *ShikiCodeBlockRenderer) renderCodeBlock(w util.BufWriter, source []byte
 	return ast.WalkContinue, err
 }
 
-func (p *Parser) ConvertReader(r io.Reader, w io.Writer) error {
-	data, err := readAll(r)
-	if err != nil {
-		return err
-	}
-	return p.md.Convert(data, w)
-}
-
-func readAll(r io.Reader) ([]byte, error) {
-	buf := new(bytes.Buffer)
-	_, err := buf.ReadFrom(r)
-	if err != nil {
-		return nil, err
-	}
-	return buf.Bytes(), nil
-}
-
-func (p *Parser) ExtractFrontmatter(source []byte) map[string]any {
-	context := parser.NewContext()
-	p.md.Parser().Parse(text.NewReader(source), parser.WithContext(context))
-
-	data := frontmatter.Get(context)
-	if data == nil {
-		return make(map[string]any)
-	}
-
-	var meta map[string]any
-	err := data.Decode(&meta)
-	if err != nil {
-		return make(map[string]any)
-	}
-	return meta
-}
-
-// TOCItem represents a table of contents entry
-type TOCItem struct {
-	ID       string
-	Text     string
-	Level    int
-	Children []TOCItem
+// Internal type for tracking heading levels during TOC extraction
+type tocItem struct {
+	ID    string
+	Text  string
+	Level int
 }
 
 // ExtractTableOfContents extracts headings from markdown to build a TOC
-func (p *Parser) ExtractTableOfContents(source []byte) []TOCItem {
+func (p *Parser) ExtractTableOfContents(source []byte) []modules.TableOfContentsItem {
 	doc := p.md.Parser().Parse(text.NewReader(source))
-	var items []TOCItem
+	var items []tocItem
 
 	ast.Walk(doc, func(n ast.Node, entering bool) (ast.WalkStatus, error) {
 		if !entering {
@@ -207,19 +171,14 @@ func (p *Parser) ExtractTableOfContents(source []byte) []TOCItem {
 			}
 			text := textBuf.String()
 
-			// Get heading ID - Goldmark's AutoHeadingID generates it
+			// Get heading ID from Goldmark's AutoHeadingID
 			id := ""
 			if idAttr, ok := heading.Attribute([]byte("id")); ok {
 				id = string(idAttr.([]byte))
 			}
 
-			// If no ID from attribute, generate one from text (same as Goldmark does)
-			if id == "" && text != "" {
-				id = generateHeadingID(text)
-			}
-
 			if text != "" && id != "" {
-				items = append(items, TOCItem{
+				items = append(items, tocItem{
 					ID:    id,
 					Text:  text,
 					Level: heading.Level,
@@ -234,53 +193,13 @@ func (p *Parser) ExtractTableOfContents(source []byte) []TOCItem {
 	return buildTOCHierarchy(items)
 }
 
-// generateHeadingID creates an ID from heading text (matching Goldmark's behavior)
-func generateHeadingID(text string) string {
-	// Convert to lowercase
-	id := ""
-	for _, r := range text {
-		if r >= 'A' && r <= 'Z' {
-			id += string(r + 32) // Convert to lowercase
-		} else if r >= 'a' && r <= 'z' || r >= '0' && r <= '9' {
-			id += string(r)
-		} else if r == ' ' || r == '-' {
-			id += "-"
-		}
-	}
-
-	// Remove consecutive dashes and trim
-	result := ""
-	lastDash := false
-	for _, r := range id {
-		if r == '-' {
-			if !lastDash {
-				result += string(r)
-				lastDash = true
-			}
-		} else {
-			result += string(r)
-			lastDash = false
-		}
-	}
-
-	// Trim dashes from start and end
-	for len(result) > 0 && result[0] == '-' {
-		result = result[1:]
-	}
-	for len(result) > 0 && result[len(result)-1] == '-' {
-		result = result[:len(result)-1]
-	}
-
-	return result
-}
-
-func buildTOCHierarchy(items []TOCItem) []TOCItem {
+func buildTOCHierarchy(items []tocItem) []modules.TableOfContentsItem {
 	if len(items) == 0 {
-		return items
+		return nil
 	}
 
-	var result []TOCItem
-	var currentH2 *TOCItem
+	var result []modules.TableOfContentsItem
+	var currentH2 *modules.TableOfContentsItem
 
 	for _, item := range items {
 		if item.Level == 2 {
@@ -288,15 +207,17 @@ func buildTOCHierarchy(items []TOCItem) []TOCItem {
 			if currentH2 != nil {
 				result = append(result, *currentH2)
 			}
-			currentH2 = &TOCItem{
+			currentH2 = &modules.TableOfContentsItem{
 				ID:       item.ID,
 				Text:     item.Text,
-				Level:    item.Level,
-				Children: []TOCItem{},
+				Children: []modules.TableOfContentsItem{},
 			}
 		} else if item.Level == 3 && currentH2 != nil {
 			// h3 - add as child to current h2
-			currentH2.Children = append(currentH2.Children, item)
+			currentH2.Children = append(currentH2.Children, modules.TableOfContentsItem{
+				ID:   item.ID,
+				Text: item.Text,
+			})
 		}
 	}
 

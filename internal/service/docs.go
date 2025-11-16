@@ -3,15 +3,13 @@ package service
 import (
 	"embed"
 	"fmt"
-	"io/fs"
 	"path/filepath"
-	"strings"
 
 	"github.com/templui/templui/internal/markdown"
 	"github.com/templui/templui/internal/ui/modules"
 )
 
-//go:embed content/docs/*.md
+//go:embed content/docs
 var contentFS embed.FS
 
 type DocsService struct {
@@ -51,29 +49,13 @@ func (s *DocsService) GetPage(slug string) (*DocPage, error) {
 	}
 
 	// Extract table of contents
-	tocItems := s.parser.ExtractTableOfContents(content)
-
-	// Convert to modules.TableOfContentsItem
-	moduleTOC := make([]modules.TableOfContentsItem, len(tocItems))
-	for i, item := range tocItems {
-		moduleTOC[i] = modules.TableOfContentsItem{
-			ID:       item.ID,
-			Text:     item.Text,
-			Children: make([]modules.TableOfContentsItem, len(item.Children)),
-		}
-		for j, child := range item.Children {
-			moduleTOC[i].Children[j] = modules.TableOfContentsItem{
-				ID:   child.ID,
-				Text: child.Text,
-			}
-		}
-	}
+	toc := s.parser.ExtractTableOfContents(content)
 
 	// Extract metadata
 	page := &DocPage{
 		Slug:    slug,
 		Content: string(html),
-		TOC:     moduleTOC,
+		TOC:     toc,
 	}
 
 	if title, ok := meta["title"].(string); ok {
@@ -87,43 +69,4 @@ func (s *DocsService) GetPage(slug string) (*DocPage, error) {
 	}
 
 	return page, nil
-}
-
-// ListPages returns all available doc pages
-func (s *DocsService) ListPages() ([]DocPage, error) {
-	var pages []DocPage
-
-	err := fs.WalkDir(contentFS, "content/docs", func(path string, d fs.DirEntry, err error) error {
-		if err != nil || d.IsDir() || !strings.HasSuffix(path, ".md") {
-			return err
-		}
-
-		// Get relative path and slug
-		relPath := strings.TrimPrefix(path, "content/docs/")
-		slug := strings.TrimSuffix(relPath, ".md")
-
-		// Read and extract frontmatter only
-		content, err := contentFS.ReadFile(path)
-		if err != nil {
-			return err
-		}
-
-		meta := s.parser.ExtractFrontmatter(content)
-
-		page := DocPage{Slug: slug}
-		if title, ok := meta["title"].(string); ok {
-			page.Title = title
-		}
-		if desc, ok := meta["description"].(string); ok {
-			page.Description = desc
-		}
-		if order, ok := meta["order"].(int); ok {
-			page.Order = order
-		}
-
-		pages = append(pages, page)
-		return nil
-	})
-
-	return pages, err
 }
