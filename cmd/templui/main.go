@@ -35,6 +35,62 @@ func getDefaultRef() string {
 // versionRegex extracts the version ref from the component/util file comment.
 var versionRegex = regexp.MustCompile(`(?m)^\s*//\s*templui\s+(?:component|util)\s+.*\s+-\s+version:\s+(\S+)`)
 
+// componentNameToSlug converts a component name to its documentation URL slug.
+// This mapping corresponds to the routes defined in cmd/docs/main.go
+func componentNameToSlug(name string) string {
+	slugMap := map[string]string{
+		"accordion":    "accordion",
+		"alert":        "alert",
+		"aspectratio":  "aspect-ratio",
+		"avatar":       "avatar",
+		"badge":        "badge",
+		"breadcrumb":   "breadcrumb",
+		"button":       "button",
+		"calendar":     "calendar",
+		"card":         "card",
+		"carousel":     "carousel",
+		"chart":        "charts",
+		"checkbox":     "checkbox",
+		"code":         "code",
+		"collapsible":  "collapsible",
+		"copybutton":   "copy-button",
+		"datepicker":   "date-picker",
+		"dialog":       "dialog",
+		"drawer":       "drawer",
+		"dropdown":     "dropdown",
+		"form":         "form",
+		"icon":         "icon",
+		"input":        "input",
+		"inputotp":     "input-otp",
+		"label":        "label",
+		"pagination":   "pagination",
+		"popover":      "popover",
+		"progress":     "progress",
+		"radio":        "radio",
+		"rating":       "rating",
+		"selectbox":    "select-box",
+		"separator":    "separator",
+		"sheet":        "sheet",
+		"sidebar":      "sidebar",
+		"skeleton":     "skeleton",
+		"slider":       "slider",
+		"switch":       "switch",
+		"table":        "table",
+		"tabs":         "tabs",
+		"tagsinput":    "tags-input",
+		"textarea":     "textarea",
+		"timepicker":   "time-picker",
+		"toast":        "toast",
+		"tooltip":      "tooltip",
+	}
+
+	if slug, ok := slugMap[name]; ok {
+		return slug
+	}
+	// Fallback: return the name as-is
+	return name
+}
+
 // Flags defined for the command line interface.
 var forceOverwrite = flag.Bool("force", false, "Force overwrite existing files without asking")
 var versionFlag = flag.Bool("version", false, "Show installer version")
@@ -864,8 +920,10 @@ func installComponent(
 				return fmt.Errorf("failed to download file '%s' for component '%s' from %s: %w", fileNameForError, comp.Name, fileURL, err)
 			}
 
-			// Add version comment and replace imports.
+			// Add version comment with documentation link and replace imports.
+			slug := componentNameToSlug(comp.Name)
 			versionComment := fmt.Sprintf("// templui component %s - version: %s installed by templui %s\n", comp.Name, ref, version)
+			versionComment += fmt.Sprintf("// 📚 Documentation: https://templui.io/docs/components/%s\n", slug)
 			modifiedData := append([]byte(versionComment), data...)
 			if strings.HasSuffix(repoFilePath, ".templ") || strings.HasSuffix(repoFilePath, ".go") {
 				modifiedData = replaceImports(modifiedData, config, comp.Name)
