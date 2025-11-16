@@ -11,6 +11,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"regexp"
+	"runtime/debug"
 	"strings"
 	// "log" // Can be used for more detailed error logging if needed
 )
@@ -23,8 +24,49 @@ const (
 	rawContentBaseURL = "https://raw.githubusercontent.com/templui/templui/"
 )
 
-// version of the tool (can be set during build with ldflags).
-var version = "v0.99.0"
+// getVersion returns the version from build info or dev version for local builds.
+// This function automatically detects the version based on how the binary was built:
+//
+// Examples:
+//   - User installation via tag:    "templui --version" → "v0.100.0"
+//   - User installation via commit: "templui --version" → "v0.0.0-20251116091234-abc1234567"
+//   - Local dev (committed):        "go run main.go --version" → "dev-2e07a97"
+//   - Local dev (dirty):            "go run main.go --version" → "dev-2e07a97-dirty"
+//   - Fallback:                     "templui --version" → "dev"
+func getVersion() string {
+	if info, ok := debug.ReadBuildInfo(); ok {
+		// Real version (e.g., v0.100.0 or pseudo-version for commit installs)
+		if info.Main.Version != "" && info.Main.Version != "(devel)" {
+			return info.Main.Version
+		}
+
+		// Dev mode: Show Git commit + dirty flag
+		var revision, modified string
+		for _, setting := range info.Settings {
+			if setting.Key == "vcs.revision" {
+				if len(setting.Value) >= 7 {
+					revision = setting.Value[:7] // Short hash
+				} else {
+					revision = setting.Value
+				}
+			}
+			if setting.Key == "vcs.modified" {
+				modified = setting.Value
+			}
+		}
+
+		if revision != "" {
+			if modified == "true" {
+				return fmt.Sprintf("dev-%s-dirty", revision)
+			}
+			return fmt.Sprintf("dev-%s", revision)
+		}
+	}
+	return "dev"
+}
+
+// version of the tool (automatically detected from build info).
+var version = getVersion()
 
 // getDefaultRef returns the current stable version
 // Uses the same version as the CLI tool itself for consistency
@@ -107,7 +149,6 @@ type Config struct {
 
 // Manifest defines the structure of the manifest.json file.
 type Manifest struct {
-	Version    string         `json:"version"`
 	Components []ComponentDef `json:"components"`
 	Utils      []UtilDef      `json:"utils"`
 }
@@ -282,7 +323,7 @@ func main() {
 			}
 			return
 		}
-		fmt.Printf("✅ Using components from templui manifest version %s (fetched from ref %s)\n", manifest.Version, targetRef)
+		fmt.Printf("✅ Using components from templui manifest (ref: %s)\n", targetRef)
 
 		// Build a map for quick component lookup.
 		componentMap := make(map[string]ComponentDef)
@@ -1188,7 +1229,7 @@ func listComponents(ref string) error {
 		return fmt.Errorf("could not fetch manifest: %w", err)
 	}
 
-	fmt.Printf("\nAvailable components in ref '%s' (Manifest Version: %s):\n", ref, manifest.Version)
+	fmt.Printf("\nAvailable components in ref '%s':\n", ref)
 	if len(manifest.Components) == 0 {
 		fmt.Println("  No components found in this manifest.")
 	} else {
