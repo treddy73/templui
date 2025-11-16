@@ -15,7 +15,7 @@ templ DocsLayout(title, description string, tocItems []modules.TableOfContentsIt
 						@modules.Sidebar()
 					</div>
 				</div>
-				<main class="flex-1 overflow-y-auto" id="main-content">
+				<main class="flex-1 overflow-y-auto scroll-smooth" id="main-content">
 					@templ.Fragment("content") {
 						<div class="pt-8 pb-8 px-4">
 							<div class="max-w-3xl mx-auto">

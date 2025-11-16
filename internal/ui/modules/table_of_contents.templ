@@ -57,48 +57,19 @@ templ renderTOCItems(items []TableOfContentsItem, level int) {
 
 templ TableOfContentsScript() {
 	<script defer nonce={ templ.GetNonce(ctx) }>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Find elements
-            const tocContainer = document.querySelector('[data-toc="container"]');
-            if (!tocContainer) return;
-            
-            const mainContent = document.querySelector('main.overflow-y-auto');
-            if (!mainContent) return;
-            
-            const tocLinks = tocContainer.querySelectorAll('[data-toc-link]');
-            if (!tocLinks.length) return;
-            
-            // Click handler for TOC links
-            tocLinks.forEach(link => {
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const sectionId = this.getAttribute('data-section-id');
-                    const section = document.getElementById(sectionId);
-                    
-                    if (section) {
-                        mainContent.scrollTo({
-                            top: section.offsetTop - 100,
-                            behavior: 'smooth'
-                        });
-                        // Set URL hash
-                        history.replaceState(null, null, '#' + sectionId);
-                    }
-                });
+        document.addEventListener('DOMContentLoaded', () => {
+            const toc = document.querySelector('[data-toc="container"]');
+            const main = document.querySelector('main.overflow-y-auto');
+            if (!toc || !main) return;
+
+            toc.addEventListener('click', (e) => {
+                const link = e.target.closest('[data-toc-link]');
+                if (!link) return;
+
+                e.preventDefault();
+                const section = document.getElementById(link.dataset.sectionId);
+                if (section) main.scrollTo({ top: section.offsetTop - 100 });
             });
-            
-            // Check hash on load
-            const initialHash = window.location.hash.replace('#', '');
-            if (initialHash) {
-                const initialSection = document.getElementById(initialHash);
-                if (initialSection) {
-                    setTimeout(() => {
-                        mainContent.scrollTo({
-                            top: initialSection.offsetTop - 100,
-                            behavior: 'auto'
-                        });
-                    }, 0);
-                }
-            }
         });
     </script>
 }
