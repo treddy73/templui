@@ -20,6 +20,9 @@ jobs:
         with:
           go-version: "1.21"
 
+      - name: 📦 Download Go modules
+        run: go mod download
+
       - name: 📦 Install Go + Node deps
         run: |
           sudo apt update
@@ -34,5 +37,10 @@ jobs:
         run: |
           npm ci
 
-      - name: ✅ Run `make validate-html`
-        run: make validate-html
+      - name: 📦 Install Task
+        run: |
+          sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b ~/.local/bin
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: ✅ Run `task validate-html`
+        run: task validate-html

@@ -82,10 +82,9 @@ tasks:
 
   build-html:
     desc: Build static showcase HTML
-    deps:
-      - templ-generate
-      - render-showcases
     cmds:
+      - task: templ-generate
+      - task: render-showcases
       - echo "✅ Static showcase HTML rendered to ./out"
 
   lint-html:
@@ -95,9 +94,9 @@ tasks:
 
   validate-html:
     desc: Run full pipeline (build + lint)
-    deps:
-      - build-html
-      - lint-html
+    cmds:
+      - task: build-html
+      - task: lint-html
 
   # Generators
   generate-sitemap:
