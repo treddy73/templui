@@ -22,9 +22,9 @@ templ Navbar() {
 	<nav class="py-4">
 		{{ stars := 0 }}
 		{{
-		if starsVal := ctx.Value(ctxkeys.GitHubStars); starsVal != nil {
-			stars = starsVal.(int)
-		}
+			if starsVal := ctx.Value(ctxkeys.GitHubStars); starsVal != nil {
+				stars = starsVal.(int)
+			}
 		}}
 		<div class="px-6 flex justify-between items-center relative">
 			<div class="flex items-center">

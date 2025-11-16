@@ -24,10 +24,10 @@ templ ComponentUsage(props ComponentUsageProps) {
 			<li>
 				<p class="mb-4 font-semibold">Add the JavaScript to your layout</p>
 				{{
-						var files string
-						for _, jsFile := range props.JSFiles {
-							files += "@" + jsFile + ".Script()\n"
-						}
+					var files string
+					for _, jsFile := range props.JSFiles {
+						files += "@" + jsFile + ".Script()\n"
+					}
 				}}
 				@Code(CodeProps{
 					CodeContent:    files,

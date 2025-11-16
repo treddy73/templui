@@ -57,8 +57,8 @@ templ PageWrapper(p PageWrapperProps) {
 		</p>
 		<div class="flex gap-2 items-baseline">
 			{{
-			componentName := strings.ToLower(strings.ReplaceAll(p.Name, " ", ""))
-			srcURL := templ.SafeURL("https://github.com/templui/templui/tree/main/internal/components/" + componentName)
+				componentName := strings.ToLower(strings.ReplaceAll(p.Name, " ", ""))
+				srcURL := templ.SafeURL("https://github.com/templui/templui/tree/main/internal/components/" + componentName)
 			}}
 			if !p.HideSource {
 				<a href={ templ.SafeURL(srcURL) } target="_blank" class="flex">
