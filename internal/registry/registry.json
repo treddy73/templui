@@ -1,0 +1,457 @@
+{
+  "components": [
+    {
+      "name": "accordion",
+      "slug": "accordion",
+      "displayName": "Accordion",
+      "description": "Collapsible accordion component.",
+      "files": ["internal/components/accordion/accordion.templ"],
+      "dependencies": ["icon"],
+      "categories": ["layout-navigation"],
+      "tags": ["accordion", "collapse", "expandable", "navigation"]
+    },
+    {
+      "name": "alert",
+      "slug": "alert",
+      "displayName": "Alert",
+      "description": "Alert component for messages and notifications.",
+      "files": ["internal/components/alert/alert.templ"],
+      "dependencies": [],
+      "categories": ["feedback-status"],
+      "tags": ["alert", "notification", "message", "status"]
+    },
+    {
+      "name": "aspectratio",
+      "slug": "aspect-ratio",
+      "displayName": "Aspect Ratio",
+      "description": "Container that maintains aspect ratio.",
+      "files": ["internal/components/aspectratio/aspectratio.templ"],
+      "dependencies": [],
+      "categories": ["display-media"],
+      "tags": ["aspect-ratio", "media", "responsive", "container"]
+    },
+    {
+      "name": "avatar",
+      "slug": "avatar",
+      "displayName": "Avatar",
+      "description": "Avatar component for user profiles.",
+      "files": ["internal/components/avatar/avatar.templ"],
+      "dependencies": [],
+      "hasJS": true,
+      "categories": ["display-media"],
+      "tags": ["avatar", "profile", "user", "image"]
+    },
+    {
+      "name": "badge",
+      "slug": "badge",
+      "displayName": "Badge",
+      "description": "Badge component for labels and status indicators.",
+      "files": ["internal/components/badge/badge.templ"],
+      "dependencies": [],
+      "categories": ["feedback-status"],
+      "tags": ["badge", "label", "status", "indicator"]
+    },
+    {
+      "name": "breadcrumb",
+      "slug": "breadcrumb",
+      "displayName": "Breadcrumb",
+      "description": "Breadcrumb navigation component.",
+      "files": ["internal/components/breadcrumb/breadcrumb.templ"],
+      "dependencies": ["icon"],
+      "categories": ["layout-navigation"],
+      "tags": ["breadcrumb", "navigation", "trail", "path"]
+    },
+    {
+      "name": "button",
+      "slug": "button",
+      "displayName": "Button",
+      "description": "Button component with multiple variants.",
+      "files": ["internal/components/button/button.templ"],
+      "dependencies": [],
+      "categories": ["form-input"],
+      "tags": ["button", "action", "interactive", "click"]
+    },
+    {
+      "name": "calendar",
+      "slug": "calendar",
+      "displayName": "Calendar",
+      "description": "Calendar component for date selection.",
+      "files": ["internal/components/calendar/calendar.templ"],
+      "dependencies": ["icon"],
+      "hasJS": true,
+      "categories": ["form-input"],
+      "tags": ["calendar", "date", "picker", "time"]
+    },
+    {
+      "name": "card",
+      "slug": "card",
+      "displayName": "Card",
+      "description": "Card container component.",
+      "files": ["internal/components/card/card.templ"],
+      "dependencies": ["aspectratio"],
+      "categories": ["display-media"],
+      "tags": ["card", "container", "content", "panel"]
+    },
+    {
+      "name": "carousel",
+      "slug": "carousel",
+      "displayName": "Carousel",
+      "description": "Carousel component with navigation controls.",
+      "files": ["internal/components/carousel/carousel.templ"],
+      "dependencies": ["icon"],
+      "hasJS": true,
+      "categories": ["display-media"],
+      "tags": ["carousel", "slider", "gallery", "slideshow"]
+    },
+    {
+      "name": "chart",
+      "slug": "charts",
+      "displayName": "Charts",
+      "description": "Chart components for data visualization.",
+      "files": ["internal/components/chart/chart.templ"],
+      "dependencies": [],
+      "hasJS": true,
+      "categories": ["display-media"],
+      "tags": ["chart", "graph", "visualization", "data"]
+    },
+    {
+      "name": "checkbox",
+      "slug": "checkbox",
+      "displayName": "Checkbox",
+      "description": "Checkbox input component.",
+      "files": ["internal/components/checkbox/checkbox.templ"],
+      "dependencies": ["icon"],
+      "categories": ["form-input"],
+      "tags": ["checkbox", "input", "form", "selection"]
+    },
+    {
+      "name": "collapsible",
+      "slug": "collapsible",
+      "displayName": "Collapsible",
+      "description": "Collapsible container component.",
+      "files": ["internal/components/collapsible/collapsible.templ"],
+      "hasJS": true,
+      "categories": ["misc"],
+      "tags": ["collapsible", "toggle", "expand", "collapse"]
+    },
+    {
+      "name": "code",
+      "slug": "code",
+      "displayName": "Code",
+      "description": "Syntax-highlighted code block component.",
+      "files": ["internal/components/code/code.templ"],
+      "dependencies": [],
+      "hasJS": true,
+      "categories": ["misc"],
+      "tags": ["code", "syntax", "highlight", "snippet"]
+    },
+    {
+      "name": "copybutton",
+      "slug": "copy-button",
+      "displayName": "Copy Button",
+      "description": "Copy to clipboard button component.",
+      "files": ["internal/components/copybutton/copybutton.templ"],
+      "dependencies": ["button", "icon"],
+      "hasJS": true,
+      "categories": ["misc"],
+      "tags": ["copy", "clipboard", "button", "utility"]
+    },
+    {
+      "name": "datepicker",
+      "slug": "date-picker",
+      "displayName": "Date Picker",
+      "description": "Date picker component combining input and calendar.",
+      "files": ["internal/components/datepicker/datepicker.templ"],
+      "dependencies": ["button", "calendar", "icon", "popover"],
+      "hasJS": true,
+      "categories": ["form-input"],
+      "tags": ["datepicker", "date", "calendar", "input", "form"]
+    },
+    {
+      "name": "sheet",
+      "slug": "sheet",
+      "displayName": "Sheet",
+      "description": "Slide-out panel component (drawer).",
+      "files": ["internal/components/sheet/sheet.templ"],
+      "dependencies": ["dialog"],
+      "categories": ["overlays-dialogs"],
+      "tags": ["sheet", "drawer", "panel", "overlay"]
+    },
+    {
+      "name": "dropdown",
+      "slug": "dropdown",
+      "displayName": "Dropdown",
+      "description": "Dropdown menu component.",
+      "files": ["internal/components/dropdown/dropdown.templ"],
+      "dependencies": ["popover"],
+      "hasJS": true,
+      "categories": ["overlays-dialogs"],
+      "tags": ["dropdown", "menu", "select", "options"]
+    },
+    {
+      "name": "form",
+      "slug": "form",
+      "displayName": "Form",
+      "description": "Form container with validation support.",
+      "files": ["internal/components/form/form.templ"],
+      "dependencies": ["label"],
+      "categories": ["form-input"],
+      "tags": ["form", "validation", "input", "layout"]
+    },
+    {
+      "name": "icon",
+      "slug": "icon",
+      "displayName": "Icon",
+      "description": "SVG icon component library.",
+      "files": [
+        "internal/components/icon/icon_data.go",
+        "internal/components/icon/icon_defs.go",
+        "internal/components/icon/icon.go"
+      ],
+      "dependencies": [],
+      "categories": ["misc"],
+      "tags": ["icon", "svg", "graphic", "symbol"]
+    },
+    {
+      "name": "input",
+      "slug": "input",
+      "displayName": "Input",
+      "description": "Text input component.",
+      "files": ["internal/components/input/input.templ"],
+      "dependencies": ["button", "icon"],
+      "hasJS": true,
+      "categories": ["form-input"],
+      "tags": ["input", "text", "form", "field"]
+    },
+    {
+      "name": "inputotp",
+      "slug": "input-otp",
+      "displayName": "Input OTP",
+      "description": "One-time password input component.",
+      "files": ["internal/components/inputotp/inputotp.templ"],
+      "dependencies": ["input"],
+      "hasJS": true,
+      "categories": ["form-input"],
+      "tags": ["otp", "password", "input", "verification", "security"]
+    },
+    {
+      "name": "label",
+      "slug": "label",
+      "displayName": "Label",
+      "description": "Form label component.",
+      "files": ["internal/components/label/label.templ"],
+      "dependencies": [],
+      "hasJS": true,
+      "categories": ["form-input"],
+      "tags": ["label", "form", "accessibility", "text"]
+    },
+    {
+      "name": "dialog",
+      "slug": "dialog",
+      "displayName": "Dialog",
+      "description": "Modal dialog component.",
+      "files": ["internal/components/dialog/dialog.templ"],
+      "dependencies": ["icon"],
+      "hasJS": true,
+      "categories": ["overlays-dialogs"],
+      "tags": ["dialog", "modal", "overlay", "popup"]
+    },
+    {
+      "name": "pagination",
+      "slug": "pagination",
+      "displayName": "Pagination",
+      "description": "Pagination component for lists and tables.",
+      "files": ["internal/components/pagination/pagination.templ"],
+      "dependencies": ["button", "icon"],
+      "categories": ["layout-navigation"],
+      "tags": ["pagination", "navigation", "pages", "list"]
+    },
+    {
+      "name": "popover",
+      "slug": "popover",
+      "displayName": "Popover",
+      "description": "Floating popover component.",
+      "files": ["internal/components/popover/popover.templ"],
+      "dependencies": [],
+      "hasJS": true,
+      "categories": ["overlays-dialogs"],
+      "tags": ["popover", "tooltip", "overlay", "floating"]
+    },
+    {
+      "name": "progress",
+      "slug": "progress",
+      "displayName": "Progress",
+      "description": "Progress bar component.",
+      "files": ["internal/components/progress/progress.templ"],
+      "dependencies": [],
+      "hasJS": true,
+      "categories": ["feedback-status"],
+      "tags": ["progress", "loading", "indicator", "status"]
+    },
+    {
+      "name": "radio",
+      "slug": "radio",
+      "displayName": "Radio",
+      "description": "Radio button group component.",
+      "files": ["internal/components/radio/radio.templ"],
+      "dependencies": [],
+      "categories": ["form-input"],
+      "tags": ["radio", "input", "form", "selection", "choice"]
+    },
+    {
+      "name": "rating",
+      "slug": "rating",
+      "displayName": "Rating",
+      "description": "Star rating input component.",
+      "files": ["internal/components/rating/rating.templ"],
+      "dependencies": ["icon"],
+      "hasJS": true,
+      "categories": ["form-input"],
+      "tags": ["rating", "star", "review", "feedback", "score"]
+    },
+    {
+      "name": "selectbox",
+      "slug": "select-box",
+      "displayName": "Select Box",
+      "description": "Searchable select component.",
+      "files": ["internal/components/selectbox/selectbox.templ"],
+      "dependencies": ["button", "icon", "popover", "input"],
+      "hasJS": true,
+      "categories": ["form-input"],
+      "tags": ["select", "dropdown", "input", "form", "search"]
+    },
+    {
+      "name": "separator",
+      "slug": "separator",
+      "displayName": "Separator",
+      "description": "Visual divider between content sections.",
+      "files": ["internal/components/separator/separator.templ"],
+      "dependencies": [],
+      "categories": ["layout-navigation"],
+      "tags": ["separator", "divider", "line", "border"]
+    },
+    {
+      "name": "sidebar",
+      "slug": "sidebar",
+      "displayName": "Sidebar",
+      "description": "Collapsible sidebar component for app layouts.",
+      "files": ["internal/components/sidebar/sidebar.templ"],
+      "dependencies": ["button", "icon", "sheet", "tooltip"],
+      "hasJS": true,
+      "categories": ["layout-navigation"],
+      "tags": ["sidebar", "navigation", "menu", "layout", "panel"]
+    },
+    {
+      "name": "skeleton",
+      "slug": "skeleton",
+      "displayName": "Skeleton",
+      "description": "Skeleton loading placeholder.",
+      "files": ["internal/components/skeleton/skeleton.templ"],
+      "dependencies": [],
+      "categories": ["feedback-status"],
+      "tags": ["skeleton", "loading", "placeholder", "shimmer"]
+    },
+    {
+      "name": "slider",
+      "slug": "slider",
+      "displayName": "Slider",
+      "description": "Slider input component.",
+      "files": ["internal/components/slider/slider.templ"],
+      "dependencies": [],
+      "hasJS": true,
+      "categories": ["form-input"],
+      "tags": ["slider", "range", "input", "form", "control"]
+    },
+    {
+      "name": "switch",
+      "slug": "switch",
+      "displayName": "Switch",
+      "description": "Toggle switch component.",
+      "files": ["internal/components/switch/switch.templ"],
+      "dependencies": [],
+      "categories": ["form-input"],
+      "tags": ["switch", "toggle", "input", "form", "boolean"]
+    },
+    {
+      "name": "table",
+      "slug": "table",
+      "displayName": "Table",
+      "description": "Table component for displaying data.",
+      "files": ["internal/components/table/table.templ"],
+      "dependencies": [],
+      "categories": ["display-media"],
+      "tags": ["table", "data", "grid", "list"]
+    },
+    {
+      "name": "tabs",
+      "slug": "tabs",
+      "displayName": "Tabs",
+      "description": "Tabbed interface component.",
+      "files": ["internal/components/tabs/tabs.templ"],
+      "dependencies": [],
+      "hasJS": true,
+      "categories": ["layout-navigation"],
+      "tags": ["tabs", "navigation", "panels", "content"]
+    },
+    {
+      "name": "tagsinput",
+      "slug": "tags-input",
+      "displayName": "Tags Input",
+      "description": "Tags input component.",
+      "files": ["internal/components/tagsinput/tagsinput.templ"],
+      "dependencies": ["badge", "input"],
+      "hasJS": true,
+      "categories": ["form-input"],
+      "tags": ["tags", "input", "form", "multi-value", "chips"]
+    },
+    {
+      "name": "textarea",
+      "slug": "textarea",
+      "displayName": "Textarea",
+      "description": "Multi-line text input component.",
+      "files": ["internal/components/textarea/textarea.templ"],
+      "dependencies": [],
+      "hasJS": true,
+      "categories": ["form-input"],
+      "tags": ["textarea", "input", "form", "text", "multiline"]
+    },
+    {
+      "name": "timepicker",
+      "slug": "time-picker",
+      "displayName": "Time Picker",
+      "description": "Time picker component.",
+      "files": ["internal/components/timepicker/timepicker.templ"],
+      "dependencies": ["button", "card", "icon", "popover"],
+      "hasJS": true,
+      "categories": ["form-input"],
+      "tags": ["timepicker", "time", "clock", "input", "form"]
+    },
+    {
+      "name": "toast",
+      "slug": "toast",
+      "displayName": "Toast",
+      "description": "Toast notification component.",
+      "files": ["internal/components/toast/toast.templ"],
+      "dependencies": ["icon"],
+      "hasJS": true,
+      "categories": ["feedback-status"],
+      "tags": ["toast", "notification", "message", "snackbar"]
+    },
+    {
+      "name": "tooltip",
+      "slug": "tooltip",
+      "displayName": "Tooltip",
+      "description": "Tooltip component for additional context.",
+      "files": ["internal/components/tooltip/tooltip.templ"],
+      "dependencies": ["popover"],
+      "categories": ["overlays-dialogs"],
+      "tags": ["tooltip", "hint", "info", "hover"]
+    }
+  ],
+  "utils": [
+    {
+      "path": "internal/utils/templui.go",
+      "description": "Core utility functions"
+    }
+  ]
+}
