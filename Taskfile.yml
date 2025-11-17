@@ -109,6 +109,11 @@ tasks:
     cmds:
       - go run cmd/icongen/main.go
 
+  generate-llms:
+    desc: Generate llms.txt from registry.json
+    cmds:
+      - go run cmd/generate-llms/main.go
+
   install-compinstall:
     desc: Install compinstall tool
     cmds:

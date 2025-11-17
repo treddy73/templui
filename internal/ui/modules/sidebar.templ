@@ -16,29 +16,22 @@ templ Sidebar() {
 							<ul class="flex w-full flex-col gap-0.5">
 								for _, link := range section.Links {
 									<li class="relative">
-										if link.Href == ctx.Value(ctxkeys.URLPathValue) {
-											<a
-												href={ templ.SafeURL(link.Href) }
+										<a
+											href={ templ.SafeURL(link.Href) }
+											if link.Href != "/llms.txt" {
 												hx-get={ string(templ.SafeURL(link.Href)) }
 												hx-target="#main-content"
 												hx-push-url="true"
 												hx-swap="innerHTML"
+											}
+											if link.Href == ctx.Value(ctxkeys.URLPathValue) {
 												class="inline-flex items-center gap-2 rounded-md p-2 text-[0.8rem] bg-accent hover:bg-accent"
-											>
-												{ link.Text }
-											</a>
-										} else {
-											<a
-												href={ templ.SafeURL(link.Href) }
-												hx-get={ string(templ.SafeURL(link.Href)) }
-												hx-target="#main-content"
-												hx-push-url="true"
-												hx-swap="innerHTML"
+											} else {
 												class="inline-flex items-center gap-2 rounded-md p-2 text-[0.8rem] hover:bg-accent hover:text-accent-foreground"
-											>
-												{ link.Text }
-											</a>
-										}
+											}
+										>
+											{ link.Text }
+										</a>
 									</li>
 								}
 							</ul>

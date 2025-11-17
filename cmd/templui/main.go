@@ -18,7 +18,7 @@ import (
 
 const (
 	configFileName = ".templui.json"
-	manifestPath   = "internal/manifest.json" // Path to the manifest within the repository
+	registryPath   = "internal/registry/registry.json" // Path to the registry within the repository
 	// Base URL for fetching raw file content.
 	// Needs adjustment if the repository location changes.
 	rawContentBaseURL = "https://raw.githubusercontent.com/templui/templui/"
@@ -77,61 +77,6 @@ func getDefaultRef() string {
 // versionRegex extracts the version ref from the component/util file comment.
 var versionRegex = regexp.MustCompile(`(?m)^\s*//\s*templui\s+(?:component|util)\s+.*\s+-\s+version:\s+(\S+)`)
 
-// componentNameToSlug converts a component name to its documentation URL slug.
-// This mapping corresponds to the routes defined in cmd/docs/main.go
-func componentNameToSlug(name string) string {
-	slugMap := map[string]string{
-		"accordion":    "accordion",
-		"alert":        "alert",
-		"aspectratio":  "aspect-ratio",
-		"avatar":       "avatar",
-		"badge":        "badge",
-		"breadcrumb":   "breadcrumb",
-		"button":       "button",
-		"calendar":     "calendar",
-		"card":         "card",
-		"carousel":     "carousel",
-		"chart":        "charts",
-		"checkbox":     "checkbox",
-		"code":         "code",
-		"collapsible":  "collapsible",
-		"copybutton":   "copy-button",
-		"datepicker":   "date-picker",
-		"dialog":       "dialog",
-		"drawer":       "drawer",
-		"dropdown":     "dropdown",
-		"form":         "form",
-		"icon":         "icon",
-		"input":        "input",
-		"inputotp":     "input-otp",
-		"label":        "label",
-		"pagination":   "pagination",
-		"popover":      "popover",
-		"progress":     "progress",
-		"radio":        "radio",
-		"rating":       "rating",
-		"selectbox":    "select-box",
-		"separator":    "separator",
-		"sheet":        "sheet",
-		"sidebar":      "sidebar",
-		"skeleton":     "skeleton",
-		"slider":       "slider",
-		"switch":       "switch",
-		"table":        "table",
-		"tabs":         "tabs",
-		"tagsinput":    "tags-input",
-		"textarea":     "textarea",
-		"timepicker":   "time-picker",
-		"toast":        "toast",
-		"tooltip":      "tooltip",
-	}
-
-	if slug, ok := slugMap[name]; ok {
-		return slug
-	}
-	// Fallback: return the name as-is
-	return name
-}
 
 // Flags defined for the command line interface.
 var forceOverwrite = flag.Bool("force", false, "Force overwrite existing files without asking")
@@ -147,15 +92,17 @@ type Config struct {
 	JSPublicPath  string `json:"jsPublicPath,omitempty"` // Public path where JS files are served (e.g., "/app/assets/js")
 }
 
-// Manifest defines the structure of the manifest.json file.
-type Manifest struct {
+// Registry defines the structure of the registry.json file.
+type Registry struct {
 	Components []ComponentDef `json:"components"`
 	Utils      []UtilDef      `json:"utils"`
 }
 
-// ComponentDef describes a single component within the manifest.
+// ComponentDef describes a single component within the registry.
 type ComponentDef struct {
 	Name          string   `json:"name"`
+	Slug          string   `json:"slug"`
+	DisplayName   string   `json:"displayName"`
 	Description   string   `json:"description"`
 	Files         []string `json:"files"`           // Paths relative to the repository root
 	Dependencies  []string `json:"dependencies"`    // Names of other required components
@@ -163,7 +110,7 @@ type ComponentDef struct {
 	HasJS         bool     `json:"hasJS,omitempty"` // Whether this component requires JavaScript
 }
 
-// UtilDef describes a single utility file within the manifest.
+// UtilDef describes a single utility file within the registry.
 type UtilDef struct {
 	Path        string `json:"path"` // Path relative to the repository root
 	Description string `json:"description"`
@@ -191,13 +138,13 @@ func main() {
 
 	// Handle help display.
 	if *helpFlag {
-		fmt.Println("Fetching manifest for help...")
-		manifest, err := fetchManifest(getDefaultRef())
+		fmt.Println("Fetching registry for help...")
+		registry, err := fetchRegistry(getDefaultRef())
 		if err != nil {
 			fmt.Println("Could not fetch component list for help:", err)
 			showHelp(nil, getDefaultRef())
 		} else {
-			showHelp(&manifest, getDefaultRef())
+			showHelp(&registry, getDefaultRef())
 		}
 		return
 	}
@@ -309,33 +256,33 @@ func main() {
 			}
 		}
 
-		// Fetch the manifest for the target ref.
+		// Fetch the registry for the target ref.
 		fmt.Printf("\n📦 Using ref: %s\n", targetRef)
-		fmt.Printf("🔍 Fetching component manifest from ref '%s'...\n", targetRef)
-		manifest, err := fetchManifest(targetRef)
+		fmt.Printf("🔍 Fetching component registry from ref '%s'...\n", targetRef)
+		registry, err := fetchRegistry(targetRef)
 		if err != nil {
 			if strings.Contains(err.Error(), "status code 404") {
-				fmt.Printf("❌ Error fetching manifest: %v\n", err)
-				fmt.Printf("   Check if the ref '%s' exists and contains the file '%s'.\n", targetRef, manifestPath)
-				fmt.Printf("   Manifest URL attempted: %s%s/%s\n", rawContentBaseURL, targetRef, manifestPath)
+				fmt.Printf("❌ Error fetching registry: %v\n", err)
+				fmt.Printf("   Check if the ref '%s' exists and contains the file '%s'.\n", targetRef, registryPath)
+				fmt.Printf("   Registry URL attempted: %s%s/%s\n", rawContentBaseURL, targetRef, registryPath)
 			} else {
-				fmt.Printf("❌ Error fetching manifest: %v\n", err)
+				fmt.Printf("❌ Error fetching registry: %v\n", err)
 			}
 			return
 		}
-		fmt.Printf("✅ Using components from templui manifest (ref: %s)\n", targetRef)
+		fmt.Printf("✅ Using components from templui registry (ref: %s)\n", targetRef)
 
 		// Build a map for quick component lookup.
 		componentMap := make(map[string]ComponentDef)
-		for _, comp := range manifest.Components {
+		for _, comp := range registry.Components {
 			componentMap[comp.Name] = comp
 		}
 
-		// If '*' was requested, get all component names from the manifest.
+		// If '*' was requested, get all component names from the registry.
 		if isInstallAll {
-			fmt.Printf("\n🚀 Preparing to install all %d components...\n", len(manifest.Components))
+			fmt.Printf("\n🚀 Preparing to install all %d components...\n", len(registry.Components))
 			componentsToInstallNames = []string{}
-			for _, comp := range manifest.Components {
+			for _, comp := range registry.Components {
 				componentsToInstallNames = append(componentsToInstallNames, comp.Name)
 			}
 		}
@@ -352,9 +299,9 @@ func main() {
 		for _, componentName := range componentsToInstallNames {
 			compDef, exists := componentMap[componentName]
 			if !exists {
-				fmt.Printf("❌ Component '%s' not found in manifest for ref '%s'.\n", componentName, targetRef)
-				fmt.Println("Available components in this manifest:")
-				for _, availableComp := range manifest.Components {
+				fmt.Printf("❌ Component '%s' not found in registry for ref '%s'.\n", componentName, targetRef)
+				fmt.Println("Available components in this registry:")
+				for _, availableComp := range registry.Components {
 					fmt.Printf("   • %s\n", availableComp.Name)
 				}
 				continue // Skip to next requested component
@@ -460,7 +407,7 @@ func main() {
 }
 
 // showHelp displays the command usage instructions.
-func showHelp(manifest *Manifest, refUsedForHelp string) {
+func showHelp(registry *Registry, refUsedForHelp string) {
 	fmt.Println("templUI " + version + " - The UI Kit for templ" + "\n")
 	fmt.Println("Usage:")
 	fmt.Println("  templui init[@<ref>]                - Initialize config and install utils from <ref>")
@@ -476,11 +423,11 @@ func showHelp(manifest *Manifest, refUsedForHelp string) {
 	fmt.Println("\nFlags:")
 	flag.PrintDefaults() // Display defined flags (-f, --force).
 
-	// Show component/util list only if -h was used and manifest was fetched.
-	if manifest != nil {
-		if len(manifest.Components) > 0 {
-			fmt.Printf("\nAvailable components in manifest (fetched from ref '%s'):\n", refUsedForHelp)
-			for _, comp := range manifest.Components {
+	// Show component/util list only if -h was used and registry was fetched.
+	if registry != nil {
+		if len(registry.Components) > 0 {
+			fmt.Printf("\nAvailable components in registry (fetched from ref '%s'):\n", refUsedForHelp)
+			for _, comp := range registry.Components {
 				desc := comp.Description
 				if len(desc) > 60 {
 					desc = desc[:57] + "..."
@@ -488,11 +435,11 @@ func showHelp(manifest *Manifest, refUsedForHelp string) {
 				fmt.Printf("  - %-15s: %s\n", comp.Name, desc)
 			}
 		} else {
-			fmt.Printf("\nNo components found in manifest for ref '%s'.\n", refUsedForHelp)
+			fmt.Printf("\nNo components found in registry for ref '%s'.\n", refUsedForHelp)
 		}
-		if len(manifest.Utils) > 0 {
+		if len(registry.Utils) > 0 {
 			fmt.Printf("\nAvailable utils in ref '%s':\n", refUsedForHelp)
-			for _, util := range manifest.Utils {
+			for _, util := range registry.Utils {
 				utilName := filepath.Base(util.Path)
 				if util.Description != "" {
 					desc := util.Description
@@ -710,25 +657,25 @@ func initConfig(ref string, force bool) {
 
 		// Install all available utils from the specified ref.
 		fmt.Printf("\nAttempting to install initial utils from ref '%s'...\n", ref)
-		manifest, err := fetchManifest(ref)
+		registry, err := fetchRegistry(ref)
 		if err != nil {
 			if strings.Contains(err.Error(), "status code 404") {
-				fmt.Printf("Warning: Could not fetch manifest from ref '%s': %v\n", ref, err)
-				fmt.Printf("  Check if the ref '%s' exists and contains the file '%s'.\n", ref, manifestPath)
+				fmt.Printf("Warning: Could not fetch registry from ref '%s': %v\n", ref, err)
+				fmt.Printf("  Check if the ref '%s' exists and contains the file '%s'.\n", ref, registryPath)
 			} else {
-				fmt.Printf("Warning: Could not fetch manifest to install initial utils: %v\n", err)
+				fmt.Printf("Warning: Could not fetch registry to install initial utils: %v\n", err)
 			}
 			return
 		}
 
-		if len(manifest.Utils) == 0 {
-			fmt.Println("No utils defined in the manifest. Skipping initial utils installation.")
+		if len(registry.Utils) == 0 {
+			fmt.Println("No utils defined in the registry. Skipping initial utils installation.")
 			return
 		}
 
 		allUtilPaths := []string{}
-		fmt.Println("Found utils in manifest:")
-		for _, utilDef := range manifest.Utils {
+		fmt.Println("Found utils in registry:")
+		for _, utilDef := range registry.Utils {
 			allUtilPaths = append(allUtilPaths, utilDef.Path)
 			fmt.Printf(" - %s\n", utilDef.Path)
 		}
@@ -812,32 +759,32 @@ func loadConfig() (Config, error) {
 	return config, nil
 }
 
-// fetchManifest downloads and parses the manifest.json file for a given git ref.
-func fetchManifest(ref string) (Manifest, error) {
-	manifestURL := rawContentBaseURL + ref + "/" + manifestPath
-	resp, err := http.Get(manifestURL)
+// fetchRegistry downloads and parses the registry.json file for a given git ref.
+func fetchRegistry(ref string) (Registry, error) {
+	registryURL := rawContentBaseURL + ref + "/" + registryPath
+	resp, err := http.Get(registryURL)
 	if err != nil {
-		return Manifest{}, fmt.Errorf("failed to start download: %w", err)
+		return Registry{}, fmt.Errorf("failed to start download: %w", err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
 		bodyBytes, _ := io.ReadAll(resp.Body)
-		return Manifest{}, fmt.Errorf("failed to download manifest from %s: status code %d, message: %s", manifestURL, resp.StatusCode, string(bodyBytes))
+		return Registry{}, fmt.Errorf("failed to download registry from %s: status code %d, message: %s", registryURL, resp.StatusCode, string(bodyBytes))
 	}
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return Manifest{}, fmt.Errorf("failed to read response body: %w", err)
+		return Registry{}, fmt.Errorf("failed to read response body: %w", err)
 	}
 
-	var manifest Manifest
-	err = json.Unmarshal(body, &manifest)
+	var registry Registry
+	err = json.Unmarshal(body, &registry)
 	if err != nil {
-		return Manifest{}, fmt.Errorf("failed to parse manifest JSON (from %s): %w", manifestURL, err)
+		return Registry{}, fmt.Errorf("failed to parse registry JSON (from %s): %w", registryURL, err)
 	}
 
-	return manifest, nil
+	return registry, nil
 }
 
 // downloadFile fetches the content of a single file from a URL.
@@ -884,7 +831,7 @@ func installComponent(
 		}
 		depComp, exists := componentMap[depName]
 		if !exists {
-			fmt.Printf("Warning: Dependency '%s' for component '%s' not found in manifest for ref '%s'. Skipping dependency.\n", depName, comp.Name, ref)
+			fmt.Printf("Warning: Dependency '%s' for component '%s' not found in registry for ref '%s'. Skipping dependency.\n", depName, comp.Name, ref)
 			continue
 		}
 		// Pass force flag to recursive calls.
@@ -962,9 +909,8 @@ func installComponent(
 			}
 
 			// Add version comment with documentation link and replace imports.
-			slug := componentNameToSlug(comp.Name)
 			versionComment := fmt.Sprintf("// templui component %s - version: %s installed by templui %s\n", comp.Name, ref, version)
-			versionComment += fmt.Sprintf("// 📚 Documentation: https://templui.io/docs/components/%s\n", slug)
+			versionComment += fmt.Sprintf("// 📚 Documentation: https://templui.io/docs/components/%s\n", comp.Slug)
 			modifiedData := append([]byte(versionComment), data...)
 			if strings.HasSuffix(repoFilePath, ".templ") || strings.HasSuffix(repoFilePath, ".go") {
 				modifiedData = replaceImports(modifiedData, config, comp.Name)
@@ -1218,23 +1164,23 @@ func addScriptTemplateToFiles(config Config, comp ComponentDef, jsFileName strin
 	return nil
 }
 
-// listComponents fetches the manifest and lists available components and utils.
+// listComponents fetches the registry and lists available components and utils.
 func listComponents(ref string) error {
-	fmt.Printf("Fetching component manifest from ref '%s'...\n", ref)
-	manifest, err := fetchManifest(ref)
+	fmt.Printf("Fetching component registry from ref '%s'...\n", ref)
+	registry, err := fetchRegistry(ref)
 	if err != nil {
 		if strings.Contains(err.Error(), "status code 404") {
-			return fmt.Errorf("could not fetch manifest: ref '%s' not found or does not contain '%s'", ref, manifestPath)
+			return fmt.Errorf("could not fetch registry: ref '%s' not found or does not contain '%s'", ref, registryPath)
 		}
-		return fmt.Errorf("could not fetch manifest: %w", err)
+		return fmt.Errorf("could not fetch registry: %w", err)
 	}
 
 	fmt.Printf("\nAvailable components in ref '%s':\n", ref)
-	if len(manifest.Components) == 0 {
-		fmt.Println("  No components found in this manifest.")
+	if len(registry.Components) == 0 {
+		fmt.Println("  No components found in this registry.")
 	} else {
 		// Print components.
-		for _, comp := range manifest.Components {
+		for _, comp := range registry.Components {
 			desc := comp.Description
 			if len(desc) > 45 {
 				desc = desc[:42] + "..."
@@ -1250,9 +1196,9 @@ func listComponents(ref string) error {
 	}
 
 	// Print utils.
-	if len(manifest.Utils) > 0 {
+	if len(registry.Utils) > 0 {
 		fmt.Printf("\nAvailable utils in ref '%s':\n", ref)
-		for _, util := range manifest.Utils {
+		for _, util := range registry.Utils {
 			utilName := filepath.Base(util.Path)
 			if util.Description != "" {
 				desc := util.Description

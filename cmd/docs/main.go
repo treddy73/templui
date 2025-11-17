@@ -90,6 +90,16 @@ func main() {
 		w.Write(content)
 	})
 
+	mux.HandleFunc("GET /llms.txt", func(w http.ResponseWriter, r *http.Request) {
+		content, err := static.Files.ReadFile("llms.txt")
+		if err != nil {
+			http.Error(w, "llms.txt not found", http.StatusNotFound)
+			return
+		}
+		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+		w.Write(content)
+	})
+
 	mux.Handle("GET /{$}", templ.Handler(pages.Landing()))
 	mux.Handle("GET /docs", http.RedirectHandler("/docs/introduction", http.StatusSeeOther))
 	mux.Handle("GET /docs/getting-started", http.RedirectHandler("/docs/introduction", http.StatusSeeOther))
